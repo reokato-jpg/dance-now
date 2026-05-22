@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserHeader } from "@/components/layout/user-header";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice, formatDate, formatTimeRange } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 
 export default function BookingDetailPage() {
@@ -42,9 +42,11 @@ export default function BookingDetailPage() {
 
   if (!booking) return <div className="min-h-screen bg-ink-900"><UserHeader /></div>;
 
+  const slot = booking.slot;
+  const studioName = slot?.studioName ?? slot?.studio?.name ?? "";
   const now = new Date();
-  const lessonDate = new Date(booking.lesson?.startAt);
-  const hoursUntil = (lessonDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const slotDate = new Date(slot?.startAt);
+  const hoursUntil = (slotDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
   let refundRate = 0;
   let refundLabel = "";
@@ -65,19 +67,17 @@ export default function BookingDetailPage() {
         <div className="space-y-4">
           <div className="card-dark p-5">
             <p className="text-xs font-mono text-ink-400">#{booking.reservationNo}</p>
-            <h1 className="text-xl font-bold text-white mt-1 mb-3">{booking.lesson?.title}</h1>
+            <h1 className="text-xl font-bold text-white mt-1 mb-3">Studio {studioName}</h1>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-ink-400">日時</span>
-                <span className="text-white">{formatDate(booking.lesson?.startAt)}</span>
+                <span className="text-white">{slot?.startAt ? formatDate(slot.startAt) : ""}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-ink-400">スタジオ</span>
-                <span className="text-white">Studio {booking.lesson?.studio?.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ink-400">講師</span>
-                <span className="text-white">{booking.lesson?.instructor?.name}</span>
+                <span className="text-ink-400">時間</span>
+                <span className="text-white">
+                  {slot?.startAt ? formatTimeRange(slot.startAt, slot.durationMin) : ""}
+                </span>
               </div>
               <div className="flex justify-between border-t border-ink-700 pt-2 mt-2">
                 <span className="text-ink-400">支払い金額</span>

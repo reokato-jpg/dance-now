@@ -21,15 +21,15 @@ export async function POST(
 
     const booking = await prisma.booking.findUnique({
       where: { id },
-      include: { lesson: true, payment: true },
+      include: { slot: true, payment: true },
     });
 
     if (!booking) return NextResponse.json({ error: "予約が見つかりません" }, { status: 404 });
     if (booking.status !== "CONFIRMED") return NextResponse.json({ error: "キャンセルできない予約です" }, { status: 400 });
 
     const now = new Date();
-    const lessonDate = new Date(booking.lesson.startAt);
-    const hoursUntil = (lessonDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const slotDate = new Date(booking.slot.startAt);
+    const hoursUntil = (slotDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     let refundRate = 0;
     if (hoursUntil > 24) refundRate = 100;

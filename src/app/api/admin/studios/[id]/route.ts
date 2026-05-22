@@ -18,7 +18,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { name, address, capacity, openAt, closeAt } = body;
+  const { name, address, capacity, openAt, closeAt, pricePerHour } = body;
 
   if (!name?.trim() || !address?.trim() || !capacity) {
     return NextResponse.json({ error: "必須項目が未入力です" }, { status: 400 });
@@ -32,6 +32,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       name: name.trim(),
       address: address.trim(),
       capacity: Number(capacity),
+      pricePerHour: Number(pricePerHour) || devStudios[idx].pricePerHour,
       openAt: openAt || "10:00",
       closeAt: closeAt || "22:00",
     };
@@ -46,6 +47,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         name: name.trim(),
         address: address.trim(),
         capacity: Number(capacity),
+        pricePerHour: Number(pricePerHour) || 3000,
         openAt: openAt || "10:00",
         closeAt: closeAt || "22:00",
       },
@@ -70,13 +72,12 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   try {
     const { prisma } = await import("@/lib/prisma");
-    // Block delete if future lessons exist
-    const futureCount = await prisma.lesson.count({
+    const futureCount = await prisma.slot.count({
       where: { studioId: id, startAt: { gte: new Date() } },
     });
     if (futureCount > 0) {
       return NextResponse.json(
-        { error: `今後のレッスンが${futureCount}件あるため削除できません` },
+        { error: `今後のスロットが${futureCount}件あるため削除できません` },
         { status: 409 }
       );
     }

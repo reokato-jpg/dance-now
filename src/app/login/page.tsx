@@ -64,7 +64,7 @@ export default function LoginPage() {
         >
           <h1 className="font-display text-6xl tracking-widest text-white mb-2">DANCE NOW</h1>
           <p className="text-white/80 text-sm tracking-widest uppercase">
-            HIPHOP · JAZZ · K-POP · BALLET · HOUSE · CONTEMPORARY
+            STUDIO RENTAL · BOOK YOUR SPACE
           </p>
         </motion.div>
       </div>
@@ -80,8 +80,8 @@ export default function LoginPage() {
             <>
               <h2 className="text-2xl font-bold text-white mb-2">ログイン / 新規登録</h2>
               <div className="bg-brand-purple/10 border border-brand-purple/30 rounded-xl p-3 mb-6">
-                <p className="text-xs text-brand-purple font-bold mb-0.5">予約するレッスン</p>
-                <p className="text-sm text-white font-bold truncate">{lesson.title}</p>
+                <p className="text-xs text-brand-purple font-bold mb-0.5">予約するスタジオ</p>
+                <p className="text-sm text-white font-bold truncate">Studio {lesson.studioName}</p>
                 <p className="text-xs text-ink-400 mt-0.5">ログイン後すぐに予約確認に進みます</p>
               </div>
             </>

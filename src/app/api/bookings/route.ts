@@ -12,16 +12,16 @@ function isEmailAvailable() {
 
 export async function POST(req: NextRequest) {
   const {
-    customerId, lessonId, reservationNo, amount, discountAmount,
+    customerId, slotId, reservationNo, amount, discountAmount,
     couponCode, paymentMethod, paymentIntentId, merchantPaymentId,
   } = await req.json();
 
-  if (!customerId || !lessonId || !reservationNo) {
+  if (!customerId || !slotId || !reservationNo) {
     return NextResponse.json({ error: "必須パラメータが不足しています" }, { status: 400 });
   }
 
   if (!isDbAvailable()) {
-    const bookingId = `dev-booking::${lessonId}::${Date.now()}`;
+    const bookingId = `dev-booking::${slotId}::${Date.now()}`;
     return NextResponse.json({ bookingId, reservationNo });
   }
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         data: {
           reservationNo,
           customerId,
-          lessonId,
+          slotId,
           status: "CONFIRMED",
           amount,
           discountAmount: discountAmount || 0,
@@ -75,16 +75,16 @@ export async function POST(req: NextRequest) {
     if (isEmailAvailable()) {
       const { Resend } = await import("resend");
       const resend = new Resend(process.env.RESEND_API_KEY);
-      const lesson = await prisma.lesson.findUnique({
-        where: { id: lessonId },
-        include: { instructor: true, studio: true },
+      const slot = await prisma.slot.findUnique({
+        where: { id: slotId },
+        include: { studio: true },
       });
       const customer = await prisma.customer.findUnique({ where: { id: customerId } });
-      if (customer?.email && lesson) {
+      if (customer?.email && slot) {
         resend.emails.send({
           from: process.env.EMAIL_FROM || "noreply@dance-now.jp",
           to: customer.email,
-          subject: `DANCE NOW - ${lesson.title} 予約確定`,
+          subject: `DANCE NOW - スタジオ${slot.studio.name} 予約確定`,
           html: `<p>${customer.lastName} ${customer.firstName} 様</p><p>予約番号: ${reservationNo}</p>`,
         }).catch(console.error);
       }
@@ -117,12 +117,12 @@ export async function GET(req: NextRequest) {
       where: {
         customerId,
         ...(type === "upcoming"
-          ? { status: "CONFIRMED", lesson: { startAt: { gte: now } } }
-          : { OR: [{ status: "ATTENDED" }, { status: "CANCELLED" }, { lesson: { startAt: { lt: now } } }] }
+          ? { status: "CONFIRMED", slot: { startAt: { gte: now } } }
+          : { OR: [{ status: "ATTENDED" }, { status: "CANCELLED" }, { slot: { startAt: { lt: now } } }] }
         ),
       },
       include: {
-        lesson: { include: { instructor: true, studio: true } },
+        slot: { include: { studio: true } },
         payment: true,
       },
       orderBy: { createdAt: "desc" },

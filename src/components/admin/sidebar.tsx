@@ -3,16 +3,15 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, CalendarDays, BookOpen, Users, Mic2,
+  LayoutDashboard, CalendarDays, BookOpen, Users,
   Building2, Tag, BarChart3, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/admin", icon: LayoutDashboard, label: "ダッシュボード" },
-  { href: "/admin/schedule", icon: CalendarDays, label: "スケジュール" },
+  { href: "/admin/schedule", icon: CalendarDays, label: "スロット管理" },
   { href: "/admin/bookings", icon: BookOpen, label: "予約一覧" },
-  { href: "/admin/instructors", icon: Mic2, label: "インストラクター" },
   { href: "/admin/studios", icon: Building2, label: "スタジオ" },
   { href: "/admin/coupons", icon: Tag, label: "クーポン" },
   { href: "/admin/sales", icon: BarChart3, label: "売上レポート" },

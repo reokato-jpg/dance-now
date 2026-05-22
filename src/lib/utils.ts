@@ -27,26 +27,12 @@ export function generateReservationNo(): string {
   return `DN-${yyyymm}-${rand}`;
 }
 
-export const GENRE_COLORS: Record<string, string> = {
-  hiphop: "#6B46C1",
-  jazz: "#EC4899",
-  kpop: "#F59E0B",
-  ballet: "#10B981",
-  house: "#3B82F6",
-  contemporary: "#8B5CF6",
-};
+export function formatTimeRange(startAt: string, durationMin: number): string {
+  const start = parseISO(startAt);
+  const end = new Date(start.getTime() + durationMin * 60000);
+  return `${format(start, "HH:mm")} 〜 ${format(end, "HH:mm")}`;
+}
 
-export const GENRE_LABELS: Record<string, string> = {
-  hiphop: "HIPHOP",
-  jazz: "JAZZ",
-  kpop: "K-POP",
-  ballet: "BALLET",
-  house: "HOUSE",
-  contemporary: "CONTEMPORARY",
-};
-
-export const LEVEL_LABELS: Record<string, string> = {
-  BEGINNER: "BEG.",
-  INTERMEDIATE: "INT.",
-  ADVANCED: "ADV.",
-};
+export const STUDIO_COLORS: string[] = [
+  "#6B46C1", "#EC4899", "#3B82F6", "#10B981", "#F59E0B",
+];

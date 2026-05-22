@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
         } : {}),
       },
       include: {
-        lesson: { include: { instructor: true, studio: true } },
+        slot: { include: { studio: true } },
         payment: true,
         customer: true,
       },

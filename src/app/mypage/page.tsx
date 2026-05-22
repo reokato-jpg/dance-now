@@ -84,7 +84,7 @@ export default function MyPage() {
           <div className="text-center py-16 text-ink-500">
             <p className="text-4xl mb-3">🎵</p>
             <p className="font-bold">
-              {tab === "upcoming" ? "予約中のレッスンはありません" : "過去のレッスンはありません"}
+              {tab === "upcoming" ? "予約中のスタジオはありません" : "過去の予約はありません"}
             </p>
             {tab === "upcoming" && (
               <Link href="/lessons" className="text-brand-purple text-sm mt-2 inline-block font-bold hover:underline">
@@ -111,9 +111,11 @@ export default function MyPage() {
                           </Badge>
                           <span className="text-xs text-ink-400 font-mono">#{booking.reservationNo?.split("-")[2]}</span>
                         </div>
-                        <h3 className="font-bold text-white">{booking.lesson?.title}</h3>
+                        <h3 className="font-bold text-white">
+                          Studio {booking.slot?.studioName ?? booking.slot?.studio?.name ?? ""}
+                        </h3>
                         <p className="text-xs text-ink-400 mt-0.5">
-                          {booking.lesson?.startAt ? formatDate(booking.lesson.startAt) : ""}
+                          {booking.slot?.startAt ? formatDate(booking.slot.startAt) : ""}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">

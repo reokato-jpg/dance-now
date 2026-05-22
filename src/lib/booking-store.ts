@@ -4,13 +4,9 @@ import { create } from "zustand";
 
 interface BookingLesson {
   id: string;
-  title: string;
-  genre: string;
-  level: string;
+  studioName: string;
   startAt: string;
   durationMin: number;
-  instructorName: string;
-  studioName: string;
   price: number;
 }
 

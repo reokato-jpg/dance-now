@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { UserHeader } from "@/components/layout/user-header";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice, formatDate, formatTimeRange } from "@/lib/utils";
 
 function BookingCompleteContent() {
   const router = useRouter();
@@ -42,15 +42,16 @@ function BookingCompleteContent() {
   }, [booking]);
 
   const handleAddCalendar = () => {
-    if (!booking?.lesson) return;
-    const start = new Date(booking.lesson.startAt);
-    const end = new Date(start.getTime() + booking.lesson.durationMin * 60000);
+    if (!booking?.slot) return;
+    const start = new Date(booking.slot.startAt);
+    const end = new Date(start.getTime() + booking.slot.durationMin * 60000);
+    const studioName = booking.slot.studioName ?? booking.slot.studio?.name ?? "";
     const ics = [
       "BEGIN:VCALENDAR", "VERSION:2.0",
       "BEGIN:VEVENT",
       `DTSTART:${start.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
       `DTEND:${end.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
-      `SUMMARY:${booking.lesson.title} - DANCE NOW`,
+      `SUMMARY:Studio${studioName} スタジオ利用 - DANCE NOW`,
       `DESCRIPTION:予約番号: ${booking.reservationNo}`,
       "END:VEVENT", "END:VCALENDAR"
     ].join("\n");
@@ -62,6 +63,9 @@ function BookingCompleteContent() {
   };
 
   if (!bookingId) return null;
+
+  const slot = booking?.slot;
+  const studioName = slot?.studioName ?? slot?.studio?.name ?? "";
 
   return (
     <div className="min-h-screen bg-ink-900">
@@ -82,7 +86,7 @@ function BookingCompleteContent() {
             <span className="text-4xl">🎉</span>
           </motion.div>
           <h1 className="text-3xl font-bold text-white mb-1">予約完了！</h1>
-          <p className="text-ink-400">レッスン当日はこのQRコードを提示してください</p>
+          <p className="text-ink-400">当日はこのQRコードを提示してください</p>
         </motion.div>
 
         {booking ? (
@@ -91,7 +95,7 @@ function BookingCompleteContent() {
             <div className="relative overflow-hidden rounded-2xl border border-brand-purple shadow-glow-purple">
               <div className="brand-gradient p-5 text-white">
                 <p className="text-xs font-bold tracking-widest uppercase opacity-80">E-TICKET</p>
-                <h2 className="text-xl font-bold mt-1">{booking.lesson?.title}</h2>
+                <h2 className="text-xl font-bold mt-1">Studio {studioName}</h2>
                 <p className="text-xs opacity-80 font-mono">#{booking.reservationNo}</p>
               </div>
 
@@ -105,15 +109,15 @@ function BookingCompleteContent() {
                 <div className="flex-1 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-ink-400">日時</span>
-                    <span className="text-white font-medium">{booking.lesson?.startAt ? formatDate(booking.lesson.startAt) : ""}</span>
+                    <span className="text-white font-medium">
+                      {slot?.startAt ? formatDate(slot.startAt) : ""}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-ink-400">講師</span>
-                    <span className="text-white">{booking.lesson?.instructor?.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-ink-400">スタジオ</span>
-                    <span className="text-white">Studio {booking.lesson?.studio?.name}</span>
+                    <span className="text-ink-400">時間</span>
+                    <span className="text-white">
+                      {slot?.startAt ? formatTimeRange(slot.startAt, slot.durationMin) : ""}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-ink-400">金額</span>

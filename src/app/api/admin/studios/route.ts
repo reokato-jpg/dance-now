@@ -23,7 +23,7 @@ export async function GET() {
   try {
     const { prisma } = await import("@/lib/prisma");
     const studios = await prisma.studio.findMany({
-      include: { _count: { select: { lessons: true } } },
+      include: { _count: { select: { slots: true } } },
       orderBy: { createdAt: "asc" },
     });
     return NextResponse.json(
@@ -32,9 +32,10 @@ export async function GET() {
         name: s.name,
         address: s.address,
         capacity: s.capacity,
+        pricePerHour: s.pricePerHour,
         openAt: s.openAt,
         closeAt: s.closeAt,
-        lessonCount: s._count.lessons,
+        lessonCount: s._count.slots,
         createdAt: s.createdAt.toISOString(),
       }))
     );
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
   if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { name, address, capacity, openAt, closeAt } = body;
+  const { name, address, capacity, openAt, closeAt, pricePerHour } = body;
 
   if (!name?.trim() || !address?.trim() || !capacity) {
     return NextResponse.json({ error: "必須項目が未入力です" }, { status: 400 });
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       address: address.trim(),
       capacity: Number(capacity),
+      pricePerHour: Number(pricePerHour) || 3000,
       openAt: openAt || "10:00",
       closeAt: closeAt || "22:00",
       lessonCount: 0,
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
         name: name.trim(),
         address: address.trim(),
         capacity: Number(capacity),
+        pricePerHour: Number(pricePerHour) || 3000,
         openAt: openAt || "10:00",
         closeAt: closeAt || "22:00",
       },

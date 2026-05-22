@@ -29,7 +29,7 @@ function DevCardForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerId: customer.id,
-          lessonId: lesson.id,
+          slotId: lesson.id,
           reservationNo,
           amount: lesson.price,
           discountAmount: coupon?.discountAmount || 0,
@@ -90,7 +90,7 @@ function CardForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerId: customer.id,
-          lessonId: lesson.id,
+          slotId: lesson.id,
           reservationNo,
           amount: lesson.price,
           discountAmount: coupon?.discountAmount || 0,

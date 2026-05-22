@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { UserHeader } from "@/components/layout/user-header";
 import { useBookingStore } from "@/lib/booking-store";
 import { useAuthStore } from "@/lib/auth-store";
-import { formatPrice, formatDate, GENRE_COLORS, LEVEL_LABELS } from "@/lib/utils";
+import { formatPrice, formatTimeRange, formatDate } from "@/lib/utils";
 
 function StepIndicator({ step }: { step: number }) {
   return (
@@ -41,8 +41,6 @@ export default function BookingConfirmPage() {
 
   if (!_hasHydrated || !lesson || !customer) return null;
 
-  const genreColor = GENRE_COLORS[lesson.genre] || "#6B46C1";
-
   return (
     <div className="min-h-screen bg-ink-900">
       <UserHeader />
@@ -53,28 +51,18 @@ export default function BookingConfirmPage() {
         <StepIndicator step={1} />
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          {/* Lesson summary */}
+          {/* Booking summary */}
           <div className="card-dark p-5">
             <p className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3">予約内容</p>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: genreColor }} />
-              <span className="text-xs font-bold uppercase" style={{ color: genreColor }}>
-                {lesson.genre.toUpperCase()} · {LEVEL_LABELS[lesson.level]}
-              </span>
-            </div>
-            <h2 className="text-xl font-bold text-white mb-3">{lesson.title}</h2>
+            <h2 className="text-xl font-bold text-white mb-3">Studio {lesson.studioName}</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-ink-400">日時</span>
-                <span className="text-white font-medium">{formatDate(lesson.startAt)}</span>
+                <span className="text-ink-400">日付</span>
+                <span className="text-white font-medium">{formatDate(lesson.startAt, "M月d日(E)")}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-ink-400">インストラクター</span>
-                <span className="text-white">{lesson.instructorName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ink-400">スタジオ</span>
-                <span className="text-white">Studio {lesson.studioName}</span>
+                <span className="text-ink-400">時間</span>
+                <span className="text-white font-medium">{formatTimeRange(lesson.startAt, lesson.durationMin)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-ink-400">お名前</span>
@@ -92,7 +80,7 @@ export default function BookingConfirmPage() {
             <p className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3">お支払い金額</p>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-ink-400">レッスン料金</span>
+                <span className="text-ink-400">利用料金</span>
                 <span className="text-white">{formatPrice(lesson.price)}</span>
               </div>
               {coupon && (

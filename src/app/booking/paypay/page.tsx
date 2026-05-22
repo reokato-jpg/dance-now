@@ -32,7 +32,7 @@ export default function PayPayPage() {
       body: JSON.stringify({
         amount: finalAmount,
         reservationNo: reservationNoRef.current,
-        lessonTitle: lesson.title,
+        lessonTitle: `Studio${lesson.studioName}`,
         customerId: customer?.id,
       }),
     })
@@ -64,7 +64,7 @@ export default function PayPayPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customerId: customer.id,
-          lessonId: lesson.id,
+          slotId: lesson.id,
           reservationNo: reservationNoRef.current,
           amount: lesson.price,
           discountAmount: coupon?.discountAmount || 0,
