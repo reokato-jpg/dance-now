@@ -1,0 +1,56 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Calendar, User, LogOut } from "lucide-react";
+import { useAuthStore } from "@/lib/auth-store";
+import { cn } from "@/lib/utils";
+
+export function UserHeader() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { customer, clearCustomer } = useAuthStore();
+
+  const handleLogout = () => {
+    clearCustomer();
+    router.push("/login");
+  };
+
+  return (
+    <header className="sticky top-0 z-50 bg-ink-900/80 backdrop-blur border-b border-ink-700">
+      <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+        <Link href="/lessons" className="font-display text-2xl tracking-wider brand-gradient-text">
+          DANCE NOW
+        </Link>
+        {customer && (
+          <nav className="flex items-center gap-2">
+            <Link
+              href="/lessons"
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                pathname.startsWith("/lessons") ? "text-brand-purple" : "text-ink-400 hover:text-white"
+              )}
+            >
+              <Calendar className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/mypage"
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                pathname.startsWith("/mypage") ? "text-brand-purple" : "text-ink-400 hover:text-white"
+              )}
+            >
+              <User className="w-5 h-5" />
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="p-2 rounded-lg text-ink-400 hover:text-white transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </nav>
+        )}
+      </div>
+    </header>
+  );
+}

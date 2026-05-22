@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/seed.ts is run by: npm run db:seed
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Genre {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  slug        String       @unique
+  color       String
+  lessons     Lesson[]
+  instructors InstructorGenre[]
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  @@map("genres")
+}
+
+model Customer {
+  id            String         @id @default(uuid())
+  phone         String         @unique
+  email         String?        @unique
+  lastName      String?        @map("last_name")
+  firstName     String?        @map("first_name")
+  birthday      DateTime?
+  genres        String[]
+  totalBookings Int            @default(0) @map("total_bookings")
+  totalSpent    Int            @default(0) @map("total_spent")
+  lastBookedAt  DateTime?      @map("last_booked_at")
+  tag           CustomerTag    @default(NEW)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  bookings      Booking[]
+  notifications Notification[]
+
+  @@map("customers")
+}
+
+enum CustomerTag {
+  NEW
+  REGULAR
+  FREQUENT
+  VIP
+}
+
+model Instructor {
+  id          String          @id @default(uuid())
+  name        String
+  bio         String?
+  photoUrl    String?         @map("photo_url")
+  hourlyRate  Int             @map("hourly_rate")
+  rating      Float           @default(0)
+  reviewCount Int             @default(0) @map("review_count")
+  experience  Int             @default(0)
+  genres      InstructorGenre[]
+  lessons     Lesson[]
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  @@map("instructors")
+}
+
+model InstructorGenre {
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId String     @map("instructor_id")
+  genre        Genre      @relation(fields: [genreId], references: [id])
+  genreId      String     @map("genre_id")
+
+  @@id([instructorId, genreId])
+  @@map("instructor_genres")
+}
+
+model Studio {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  capacity  Int
+  openAt    String   @map("open_at")
+  closeAt   String   @map("close_at")
+  lessons   Lesson[]
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("studios")
+}
+
+model Lesson {
+  id           String    @id @default(uuid())
+  title        String
+  genre        Genre     @relation(fields: [genreId], references: [id])
+  genreId      String    @map("genre_id")
+  level        LessonLevel
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructorId String    @map("instructor_id")
+  studio       Studio    @relation(fields: [studioId], references: [id])
+  studioId     String    @map("studio_id")
+  startAt      DateTime  @map("start_at")
+  durationMin  Int       @default(60) @map("duration_min")
+  capacity     Int
+  price        Int
+  bookings     Booking[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("lessons")
+}
+
+enum LessonLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  reservationNo  String        @unique @map("reservation_no")
+  customer       Customer      @relation(fields: [customerId], references: [id])
+  customerId     String        @map("customer_id")
+  lesson         Lesson        @relation(fields: [lessonId], references: [id])
+  lessonId       String        @map("lesson_id")
+  status         BookingStatus @default(CONFIRMED)
+  amount         Int
+  discountAmount Int           @default(0) @map("discount_amount")
+  coupon         Coupon?       @relation(fields: [couponId], references: [id])
+  couponId       String?       @map("coupon_id")
+  payment        Payment?
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  CONFIRMED
+  ATTENDED
+  CANCELLED
+  NO_SHOW
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  booking        Booking       @relation(fields: [bookingId], references: [id])
+  bookingId      String        @unique @map("booking_id")
+  method         PaymentMethod
+  providerTxnId  String?       @map("provider_txn_id")
+  amount         Int
+  status         PaymentStatus @default(PENDING)
+  refundAmount   Int           @default(0) @map("refund_amount")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  STRIPE
+  PAYPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  FAILED
+}
+
+model Coupon {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  discountType  DiscountType @map("discount_type")
+  discountValue Int          @map("discount_value")
+  validUntil    DateTime?    @map("valid_until")
+  usageLimit    Int?         @map("usage_limit")
+  usageCount    Int          @default(0) @map("usage_count")
+  targetGenres  String[]     @map("target_genres")
+  isActive      Boolean      @default(true) @map("is_active")
+  bookings      Booking[]
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  @@map("coupons")
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  customer   Customer         @relation(fields: [customerId], references: [id])
+  customerId String           @map("customer_id")
+  type       NotificationType
+  sentAt     DateTime?        @map("sent_at")
+  openedAt   DateTime?        @map("opened_at")
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  BOOKING_CONFIRMED
+  REMINDER
+  CANCEL_REFUND
+  COUPON
+}

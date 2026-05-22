@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 30% 7%;
+    --foreground: 0 0% 98%;
+    --card: 240 25% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 25% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 265 59% 52%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 330 81% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 20% 15%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 240 20% 18%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 20% 18%;
+    --input: 240 20% 18%;
+    --ring: 265 59% 52%;
+    --radius: 10px;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(240 20% 18%);
+  }
+  body {
+    @apply bg-ink-900 text-white font-sans antialiased;
+    font-feature-settings: "pkna";
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .brand-gradient {
+    background: linear-gradient(135deg, #6B46C1, #EC4899);
+  }
+  .brand-gradient-text {
+    background: linear-gradient(135deg, #6B46C1, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card-dark {
+    @apply bg-ink-800 border border-ink-700 rounded-lg;
+  }
+  .btn-primary {
+    @apply brand-gradient text-white font-bold rounded-pill px-6 py-3 hover:opacity-90 transition-opacity;
+  }
+  .input-dark {
+    @apply bg-ink-700 border border-ink-600 rounded-lg px-4 py-3 text-white placeholder-ink-500 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple;
+  }
+  .genre-badge {
+    @apply text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wide;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1A1035;
+}
+::-webkit-scrollbar-thumb {
+  background: #3D2B6B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6B46C1;
+}

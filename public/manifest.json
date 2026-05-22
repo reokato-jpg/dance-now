@@ -1,0 +1,13 @@
+{
+  "name": "DANCE NOW",
+  "short_name": "DANCE NOW",
+  "description": "ダンスレッスン予約システム",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0A1F",
+  "theme_color": "#6B46C1",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
