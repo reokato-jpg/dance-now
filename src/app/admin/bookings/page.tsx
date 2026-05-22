@@ -98,7 +98,7 @@ export default function AdminBookingsPage() {
             <thead>
               <tr className="border-b border-ink-700">
                 <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase tracking-wider">予約番号</th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase tracking-wider">レッスン</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase tracking-wider">スタジオ</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase tracking-wider">日時</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase tracking-wider">金額</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase tracking-wider">支払</th>
@@ -122,8 +122,10 @@ export default function AdminBookingsPage() {
                 bookings.map((b: any) => (
                   <tr key={b.id} className="border-b border-ink-700 hover:bg-ink-700/50 transition-colors">
                     <td className="px-4 py-3 font-mono text-brand-purple text-xs">{b.reservationNo}</td>
-                    <td className="px-4 py-3 font-medium text-white">{b.lesson?.title}</td>
-                    <td className="px-4 py-3 text-ink-300">{b.lesson?.startAt ? formatDate(b.lesson.startAt) : "---"}</td>
+                    <td className="px-4 py-3 font-medium text-white">
+                      Studio {b.slot?.studioName ?? b.slot?.studio?.name ?? "---"}
+                    </td>
+                    <td className="px-4 py-3 text-ink-300">{b.slot?.startAt ? formatDate(b.slot.startAt) : "---"}</td>
                     <td className="px-4 py-3 font-bold text-white">{formatPrice(b.amount - b.discountAmount)}</td>
                     <td className="px-4 py-3">
                       <span className={cn("text-xs font-bold px-2 py-0.5 rounded-full", b.payment?.method === "PAYPAY" ? "bg-[#FF0033]/20 text-[#FF0033]" : "bg-blue-500/20 text-blue-400")}>
