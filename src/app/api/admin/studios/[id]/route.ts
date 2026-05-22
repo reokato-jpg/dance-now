@@ -13,9 +13,10 @@ function requireAdmin() {
   return session?.value === "authenticated";
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { id } = await params;
   const body = await req.json();
   const { name, address, capacity, openAt, closeAt } = body;
 
@@ -24,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 
   if (!isDbAvailable()) {
-    const idx = devStudios.findIndex((s) => s.id === params.id);
+    const idx = devStudios.findIndex((s) => s.id === id);
     if (idx === -1) return NextResponse.json({ error: "見つかりません" }, { status: 404 });
     devStudios[idx] = {
       ...devStudios[idx],
@@ -40,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   try {
     const { prisma } = await import("@/lib/prisma");
     const studio = await prisma.studio.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: name.trim(),
         address: address.trim(),
@@ -56,11 +57,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { id } = await params;
+
   if (!isDbAvailable()) {
-    const idx = devStudios.findIndex((s) => s.id === params.id);
+    const idx = devStudios.findIndex((s) => s.id === id);
     if (idx !== -1) devStudios.splice(idx, 1);
     return NextResponse.json({ ok: true });
   }
@@ -69,7 +72,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     const { prisma } = await import("@/lib/prisma");
     // Block delete if future lessons exist
     const futureCount = await prisma.lesson.count({
-      where: { studioId: params.id, startAt: { gte: new Date() } },
+      where: { studioId: id, startAt: { gte: new Date() } },
     });
     if (futureCount > 0) {
       return NextResponse.json(
@@ -77,7 +80,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
         { status: 409 }
       );
     }
-    await prisma.studio.delete({ where: { id: params.id } });
+    await prisma.studio.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(err);
