@@ -7,14 +7,14 @@ function isDbAvailable() {
   return url !== "" && !url.includes("placeholder");
 }
 
-function requireAdmin() {
-  const cookieStore = cookies();
-  const session = (cookieStore as any).get("admin_session");
+async function requireAdmin() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
   return session?.value === "authenticated";
 }
 
 export async function GET() {
-  if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   if (!isDbAvailable()) {
     return NextResponse.json(devStudios);
@@ -46,7 +46,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
   const { name, address, capacity, openAt, closeAt, pricePerHour } = body;

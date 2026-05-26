@@ -7,14 +7,14 @@ function isDbAvailable() {
   return url !== "" && !url.includes("placeholder");
 }
 
-function requireAdmin() {
-  const cookieStore = cookies();
-  const session = (cookieStore as any).get("admin_session");
+async function requireAdmin() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
   return session?.value === "authenticated";
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
   const body = await req.json();
@@ -60,7 +60,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
 
