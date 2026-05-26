@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Search, Download, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,62 +10,111 @@ import { format } from "date-fns";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
-const SEGMENT_MAP: Record<string, { label: string; color: string; variant: any }> = {
-  VIP: { label: "VIP", color: "#EC4899", variant: "pink" },
-  FREQUENT: { label: "常連", color: "#6B46C1", variant: "default" },
-  REGULAR: { label: "リピーター", color: "#10B981", variant: "success" },
-  NEW: { label: "新規", color: "#6B7280", variant: "secondary" },
+interface Customer {
+  id: string;
+  phone: string;
+  email: string | null;
+  lastName: string | null;
+  firstName: string | null;
+  tag: "NEW" | "REGULAR" | "FREQUENT" | "VIP";
+  totalBookings: number;
+  totalSpent: number;
+  lastBookedAt: string | null;
+  createdAt: string;
+}
+
+interface CustomerResponse {
+  customers: Customer[];
+  total: number;
+  counts: Record<string, number>;
+}
+
+const SEGMENT_MAP = {
+  VIP: { label: "VIP", variant: "pink" as const },
+  FREQUENT: { label: "常連", variant: "default" as const },
+  REGULAR: { label: "リピーター", variant: "success" as const },
+  NEW: { label: "新規", variant: "secondary" as const },
 };
 
-const MOCK_CUSTOMERS = [
-  { id: "1", phone: "090-1234-5678", email: "sakura@ex.jp", bookings: 28, totalSpent: 98000, lastBookedAt: "2026-05-18", tag: "VIP" },
-  { id: "2", phone: "090-8765-4321", email: null, bookings: 12, totalSpent: 42000, lastBookedAt: "2026-05-15", tag: "FREQUENT" },
-  { id: "3", phone: "090-5555-3333", email: "misaki@ex.jp", bookings: 7, totalSpent: 24500, lastBookedAt: "2026-05-12", tag: "REGULAR" },
-  { id: "4", phone: "090-2222-1111", email: "hanako@ex.jp", bookings: 2, totalSpent: 7000, lastBookedAt: "2026-03-12", tag: "NEW" },
-  { id: "5", phone: "090-9999-8888", email: "moe@ex.jp", bookings: 5, totalSpent: 17500, lastBookedAt: null, tag: "REGULAR" },
-];
-
-const SEGMENTS = [
-  { key: "ALL", label: "全員", count: 1248 },
-  { key: "VIP", label: "VIP (10+)", count: 82 },
-  { key: "FREQUENT", label: "3〜9回", count: 368 },
-  { key: "REGULAR", label: "1〜2回", count: 542 },
-  { key: "NEW", label: "30日以内", count: 256 },
-];
+const SEGMENT_LABELS: Record<string, string> = {
+  ALL: "全員",
+  VIP: "VIP",
+  FREQUENT: "常連 (10+)",
+  REGULAR: "リピーター",
+  NEW: "新規",
+};
 
 export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [segment, setSegment] = useState("ALL");
+  const [page, setPage] = useState(1);
 
-  const filtered = MOCK_CUSTOMERS.filter((c) =>
-    (segment === "ALL" || c.tag === segment) &&
-    (search === "" || c.phone.includes(search) || c.email?.includes(search))
-  );
+  const { data, isLoading } = useQuery<CustomerResponse>({
+    queryKey: ["admin-customers", debouncedSearch, segment, page],
+    queryFn: () => {
+      const params = new URLSearchParams({
+        search: debouncedSearch,
+        segment,
+        page: String(page),
+        limit: "20",
+      });
+      return fetch(`/api/admin/customers?${params}`).then((r) => r.json());
+    },
+    placeholderData: (prev) => prev,
+  });
+
+  const handleSearchChange = (v: string) => {
+    setSearch(v);
+    clearTimeout((handleSearchChange as any)._t);
+    (handleSearchChange as any)._t = setTimeout(() => {
+      setDebouncedSearch(v);
+      setPage(1);
+    }, 300);
+  };
+
+  const handleSegmentChange = (s: string) => {
+    setSegment(s);
+    setPage(1);
+  };
+
+  const handleCsvExport = () => {
+    window.open("/api/admin/bookings/export", "_blank");
+  };
+
+  const counts = data?.counts ?? {};
+  const customers = data?.customers ?? [];
+  const total = data?.total ?? 0;
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">顧客管理 (CRM)</h1>
-          <p className="text-ink-400 text-sm">全 {SEGMENTS[0].count.toLocaleString()} 名</p>
+          <p className="text-ink-400 text-sm">全 {(counts.ALL ?? 0).toLocaleString()} 名</p>
         </div>
-        <Button variant="secondary" size="sm" className="gap-2">
+        <Button variant="secondary" size="sm" className="gap-2" onClick={handleCsvExport}>
           <Download className="w-4 h-4" /> CSV出力
         </Button>
       </div>
 
-      {/* Segments */}
+      {/* Segment tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-5 no-scrollbar">
-        {SEGMENTS.map(({ key, label, count }) => (
+        {["ALL", "VIP", "FREQUENT", "REGULAR", "NEW"].map((key) => (
           <button
             key={key}
-            onClick={() => setSegment(key)}
+            onClick={() => handleSegmentChange(key)}
             className={cn(
               "flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold border transition-all",
-              segment === key ? "bg-brand-purple border-brand-purple text-white shadow-glow-purple" : "border-ink-700 text-ink-400 hover:text-white bg-ink-800"
+              segment === key
+                ? "bg-brand-purple border-brand-purple text-white shadow-glow-purple"
+                : "border-ink-700 text-ink-400 hover:text-white bg-ink-800"
             )}
           >
-            {label} <span className="text-xs ml-1 opacity-70">{count.toLocaleString()}</span>
+            {SEGMENT_LABELS[key]}{" "}
+            <span className="text-xs ml-1 opacity-70">
+              {(counts[key] ?? 0).toLocaleString()}
+            </span>
           </button>
         ))}
       </div>
@@ -72,7 +122,12 @@ export default function AdminCustomersPage() {
       {/* Search */}
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-500" />
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="電話番号、メールアドレスで検索" className="pl-9" />
+        <Input
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="電話番号・メール・名前で検索"
+          className="pl-9"
+        />
       </div>
 
       {/* Table */}
@@ -80,8 +135,8 @@ export default function AdminCustomersPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-ink-700">
-              <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase">電話番号</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase">メール</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase">名前</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase">連絡先</th>
               <th className="px-4 py-3 text-center text-xs font-bold text-ink-400 uppercase">予約数</th>
               <th className="px-4 py-3 text-right text-xs font-bold text-ink-400 uppercase">LTV</th>
               <th className="px-4 py-3 text-center text-xs font-bold text-ink-400 uppercase">最終予約</th>
@@ -89,31 +144,90 @@ export default function AdminCustomersPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((c) => {
-              const seg = SEGMENT_MAP[c.tag];
-              return (
-                <tr key={c.id} className="border-b border-ink-700 hover:bg-ink-700/50 transition-colors cursor-pointer">
-                  <td className="px-4 py-3 font-mono text-white">{c.phone}</td>
-                  <td className="px-4 py-3 text-ink-300">{c.email || "---"}</td>
-                  <td className="px-4 py-3 text-center">
-                    <span className="font-bold text-white">{c.bookings}</span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-bold text-brand-purple">{formatPrice(c.totalSpent)}</td>
-                  <td className="px-4 py-3 text-center text-ink-400 text-xs">
-                    {c.lastBookedAt ? format(new Date(c.lastBookedAt), "M/d") : "---"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Badge variant={seg.variant} className="gap-1">
-                      {c.tag === "VIP" && <Crown className="w-3 h-3" />}
-                      {seg.label}
-                    </Badge>
+            {isLoading
+              ? [...Array(5)].map((_, i) => (
+                  <tr key={i} className="border-b border-ink-700">
+                    {[...Array(6)].map((_, j) => (
+                      <td key={j} className="px-4 py-3">
+                        <div className="h-4 bg-ink-700 rounded animate-pulse" />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              : customers.length === 0
+              ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-ink-500">
+                    顧客が見つかりません
                   </td>
                 </tr>
-              );
-            })}
+              )
+              : customers.map((c) => {
+                  const seg = SEGMENT_MAP[c.tag];
+                  const name =
+                    c.lastName && c.firstName
+                      ? `${c.lastName} ${c.firstName}`
+                      : null;
+                  return (
+                    <tr
+                      key={c.id}
+                      className="border-b border-ink-700 hover:bg-ink-700/50 transition-colors"
+                    >
+                      <td className="px-4 py-3 text-white font-medium">
+                        {name ?? <span className="text-ink-500 text-xs">未設定</span>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-mono text-white text-xs">{c.phone}</p>
+                        {c.email && <p className="text-ink-400 text-xs mt-0.5">{c.email}</p>}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="font-bold text-white">{c.totalBookings}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right font-bold text-brand-purple">
+                        {formatPrice(c.totalSpent)}
+                      </td>
+                      <td className="px-4 py-3 text-center text-ink-400 text-xs">
+                        {c.lastBookedAt
+                          ? format(new Date(c.lastBookedAt), "M/d")
+                          : "---"}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Badge variant={seg.variant} className="gap-1">
+                          {c.tag === "VIP" && <Crown className="w-3 h-3" />}
+                          {seg.label}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {total > 20 && (
+        <div className="flex items-center justify-between mt-4 text-sm text-ink-400">
+          <span>{total}件中 {(page - 1) * 20 + 1}〜{Math.min(page * 20, total)}件表示</span>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              前へ
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page * 20 >= total}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              次へ
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
