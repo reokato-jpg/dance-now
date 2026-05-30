@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { authenticator } from "otplib";
+import { verify as totpVerify } from "otplib";
 import { createSessionCookie } from "@/lib/admin-session";
 
 export async function POST(req: NextRequest) {
@@ -17,7 +17,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "TOTP未設定" }, { status: 500 });
   }
 
-  const isValid = authenticator.verify({ token: totp, secret });
+  let isValid = false;
+  try {
+    const result = await totpVerify({ secret, token: totp });
+    isValid = result.valid;
+  } catch {
+    isValid = false;
+  }
+
   if (!isValid) {
     return NextResponse.json({ error: "認証コードが正しくありません" }, { status: 401 });
   }
