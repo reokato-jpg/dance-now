@@ -152,7 +152,6 @@ export async function GET() {
     });
   } catch (err) {
     console.error(err);
-    const msg = err instanceof Error ? `${err.message} | ${(err as NodeJS.ErrnoException).code}` : String(err);
-    return NextResponse.json({ error: "取得失敗", detail: msg }, { status: 500 });
+    return NextResponse.json({ error: "取得失敗" }, { status: 500 });
   }
 }
