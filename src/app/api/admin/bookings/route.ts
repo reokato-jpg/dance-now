@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-session";
-import { cookies } from "next/headers";
 import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {

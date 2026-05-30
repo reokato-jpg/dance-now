@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-session";
-import { cookies } from "next/headers";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { ja } from "date-fns/locale";
 import { getAdminClient } from "@/lib/supabase-admin";

@@ -23,8 +23,13 @@ export default function AdminLoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email, password: data.password }),
       });
-      if (!res.ok) throw new Error("認証情報が正しくありません");
-      setStep("totp");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "認証情報が正しくありません");
+      if (json.requireTotp) {
+        setStep("totp");
+      } else {
+        router.push("/admin");
+      }
     } catch (err) {
       toast({ title: "ログインエラー", description: err instanceof Error ? err.message : "エラーが発生しました", variant: "destructive" });
     } finally {
