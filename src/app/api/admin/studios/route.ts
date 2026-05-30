@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-session";
 import { cookies } from "next/headers";
 import { devStudios } from "@/lib/dev-stores";
 import { getAdminClient } from "@/lib/supabase-admin";
@@ -7,11 +8,6 @@ function isDbAvailable() {
   return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
-async function requireAdmin() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("admin_session");
-  return session?.value === "authenticated";
-}
 
 export async function GET() {
   if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
