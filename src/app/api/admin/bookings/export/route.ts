@@ -1,39 +1,64 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
 import { format } from "date-fns";
+import { getAdminClient } from "@/lib/supabase-admin";
+
+function isDbAvailable() {
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
+async function requireAdmin() {
+  const cookieStore = await cookies();
+  return cookieStore.get("admin_session")?.value === "authenticated";
+}
 
 export async function GET() {
-  try {
-    const bookings = await prisma.booking.findMany({
-      include: {
-        slot: { include: { studio: true } },
-        payment: true,
-        customer: true,
+  if (!(await requireAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!isDbAvailable()) {
+    const csv = "予約番号,スタジオ,日時,金額,支払方法,ステータス,顧客電話番号\n";
+    return new NextResponse("﻿" + csv, {
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="bookings_${format(new Date(), "yyyyMMdd")}.csv"`,
       },
-      orderBy: { createdAt: "desc" },
     });
+  }
+
+  try {
+    const db = getAdminClient();
+    const { data: bookings, error } = await db.from("bookings")
+      .select(
+        "reservation_no, status, amount, discount_amount, " +
+        "slot:slots(start_at, studio:studios(name)), " +
+        "payments(method), " +
+        "customer:customers(phone)"
+      )
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
 
     const header = ["予約番号", "スタジオ", "日時", "金額", "支払方法", "ステータス", "顧客電話番号"];
-    const rows = bookings.map((b) => [
-      b.reservationNo,
-      `Studio ${b.slot.studio.name}`,
-      format(b.slot.startAt, "yyyy/MM/dd HH:mm"),
-      b.amount - b.discountAmount,
-      b.payment?.method || "",
+    const rows = (bookings ?? []).map((b: any) => [
+      b.reservation_no,
+      b.slot?.studio?.name ? `Studio ${b.slot.studio.name}` : "",
+      b.slot?.start_at ? format(new Date(b.slot.start_at), "yyyy/MM/dd HH:mm") : "",
+      b.amount - b.discount_amount,
+      b.payments?.[0]?.method || "",
       b.status,
-      b.customer.phone,
+      b.customer?.phone || "",
     ]);
 
     const csv = [header, ...rows].map((row) => row.join(",")).join("\n");
-    const bom = "﻿";
 
-    return new NextResponse(bom + csv, {
+    return new NextResponse("﻿" + csv, {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
         "Content-Disposition": `attachment; filename="bookings_${format(new Date(), "yyyyMMdd")}.csv"`,
       },
     });
   } catch (err) {
+    console.error(err);
     return NextResponse.json({ error: "エクスポートに失敗しました" }, { status: 500 });
   }
 }

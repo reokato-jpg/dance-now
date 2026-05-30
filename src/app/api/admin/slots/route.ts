@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { devSlots, devStudios } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export async function GET(req: NextRequest) {
@@ -21,33 +21,32 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const where = dateStr
-      ? {
-          startAt: {
-            gte: new Date(new Date(dateStr).setHours(0, 0, 0, 0)),
-            lte: new Date(new Date(dateStr).setHours(23, 59, 59, 999)),
-          },
-        }
-      : {};
-    const slots = await prisma.slot.findMany({
-      where,
-      include: {
-        studio: true,
-        _count: { select: { bookings: { where: { status: { not: "CANCELLED" } } } } },
-      },
-      orderBy: { startAt: "asc" },
-    });
+    const db = getAdminClient();
+    let query = db.from("slots")
+      .select("id, studio_id, start_at, duration_min, capacity, price, studio:studios(name, address), bookings(status)")
+      .order("start_at", { ascending: true });
+
+    if (dateStr) {
+      const dayStart = new Date(dateStr);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(dateStr);
+      dayEnd.setHours(23, 59, 59, 999);
+      query = query.gte("start_at", dayStart.toISOString()).lte("start_at", dayEnd.toISOString());
+    }
+
+    const { data: slots, error } = await query;
+    if (error) throw error;
+
     return NextResponse.json(
-      slots.map((s) => ({
+      (slots ?? []).map((s: any) => ({
         id: s.id,
-        studioId: s.studioId,
-        studioName: s.studio.name,
-        studioAddress: s.studio.address,
-        startAt: s.startAt.toISOString(),
-        durationMin: s.durationMin,
+        studioId: s.studio_id,
+        studioName: s.studio?.name ?? "",
+        studioAddress: s.studio?.address ?? "",
+        startAt: s.start_at,
+        durationMin: s.duration_min,
         capacity: s.capacity,
-        bookedCount: s._count.bookings,
+        bookedCount: (s.bookings ?? []).filter((b: any) => b.status !== "CANCELLED").length,
         price: s.price,
       }))
     );
@@ -87,25 +86,38 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const studio = await prisma.studio.findUnique({ where: { id: studioId } });
-    if (!studio) return NextResponse.json({ error: "スタジオが見つかりません" }, { status: 404 });
+    const db = getAdminClient();
+
+    const { data: studio, error: studioErr } = await db.from("studios")
+      .select("id, name, address")
+      .eq("id", studioId)
+      .single();
+
+    if (studioErr || !studio) return NextResponse.json({ error: "スタジオが見つかりません" }, { status: 404 });
 
     const startAt = new Date(date);
-    startAt.setHours(startHour, startMinute ?? 0, 0, 0);
+    startAt.setHours(Number(startHour), Number(startMinute ?? 0), 0, 0);
 
-    const slot = await prisma.slot.create({
-      data: { studioId, startAt, durationMin: Number(durationMin), capacity: Number(capacity), price: Number(price) },
-      include: { studio: true },
-    });
+    const { data: slot, error } = await db.from("slots")
+      .insert({
+        studio_id: studioId,
+        start_at: startAt.toISOString(),
+        duration_min: Number(durationMin),
+        capacity: Number(capacity),
+        price: Number(price),
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json({
       id: slot.id,
-      studioId: slot.studioId,
-      studioName: slot.studio.name,
-      studioAddress: slot.studio.address,
-      startAt: slot.startAt.toISOString(),
-      durationMin: slot.durationMin,
+      studioId: slot.studio_id,
+      studioName: (studio as any).name,
+      studioAddress: (studio as any).address,
+      startAt: slot.start_at,
+      durationMin: slot.duration_min,
       capacity: slot.capacity,
       bookedCount: 0,
       price: slot.price,

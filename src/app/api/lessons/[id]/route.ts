@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { devSlots } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export async function GET(
@@ -19,25 +19,24 @@ export async function GET(
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const slot = await prisma.slot.findUnique({
-      where: { id },
-      include: {
-        studio: true,
-        _count: { select: { bookings: { where: { status: { not: "CANCELLED" } } } } },
-      },
-    });
-    if (!slot) return NextResponse.json({ error: "見つかりません" }, { status: 404 });
+    const db = getAdminClient();
+    const { data: slot, error } = await db.from("slots")
+      .select("id, studio_id, start_at, duration_min, capacity, price, studio:studios(name, address), bookings(status)")
+      .eq("id", id)
+      .single();
+
+    if (error || !slot) return NextResponse.json({ error: "見つかりません" }, { status: 404 });
+
     return NextResponse.json({
-      id: slot.id,
-      studioId: slot.studioId,
-      studioName: slot.studio.name,
-      studioAddress: slot.studio.address,
-      startAt: slot.startAt.toISOString(),
-      durationMin: slot.durationMin,
-      capacity: slot.capacity,
-      bookedCount: slot._count.bookings,
-      price: slot.price,
+      id: (slot as any).id,
+      studioId: (slot as any).studio_id,
+      studioName: (slot as any).studio?.name ?? "",
+      studioAddress: (slot as any).studio?.address ?? "",
+      startAt: (slot as any).start_at,
+      durationMin: (slot as any).duration_min,
+      capacity: (slot as any).capacity,
+      bookedCount: ((slot as any).bookings ?? []).filter((b: any) => b.status !== "CANCELLED").length,
+      price: (slot as any).price,
     });
   } catch (err) {
     console.error("Slot detail error:", err);

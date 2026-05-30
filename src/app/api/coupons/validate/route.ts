@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 const DEV_COUPONS: Record<string, { discountType: "PERCENT" | "FIXED"; discountValue: number }> = {
@@ -33,27 +33,32 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const coupon = await prisma.coupon.findUnique({ where: { code: code.toUpperCase() } });
+    const db = getAdminClient();
+    const { data: coupon, error } = await db.from("coupons")
+      .select("code, discount_type, discount_value, is_active, valid_until, usage_limit, usage_count")
+      .eq("code", code.toUpperCase())
+      .single();
 
-    if (!coupon) return NextResponse.json({ error: "このクーポンは存在しません" }, { status: 404 });
-    if (!coupon.isActive) return NextResponse.json({ error: "このクーポンは無効です" }, { status: 400 });
-    if (coupon.validUntil && new Date(coupon.validUntil) < new Date()) {
+    if (error || !coupon) return NextResponse.json({ error: "このクーポンは存在しません" }, { status: 404 });
+
+    const c = coupon as any;
+    if (!c.is_active) return NextResponse.json({ error: "このクーポンは無効です" }, { status: 400 });
+    if (c.valid_until && new Date(c.valid_until) < new Date()) {
       return NextResponse.json({ error: "このクーポンは期限切れです" }, { status: 400 });
     }
-    if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
+    if (c.usage_limit && c.usage_count >= c.usage_limit) {
       return NextResponse.json({ error: "このクーポンは使用上限に達しました" }, { status: 400 });
     }
 
-    const discountAmount = coupon.discountType === "PERCENT"
-      ? Math.floor(lessonPrice * coupon.discountValue / 100)
-      : Math.min(coupon.discountValue, lessonPrice);
+    const discountAmount = c.discount_type === "PERCENT"
+      ? Math.floor(lessonPrice * c.discount_value / 100)
+      : Math.min(c.discount_value, lessonPrice);
 
     return NextResponse.json({
       coupon: {
-        code: coupon.code,
-        discountType: coupon.discountType,
-        discountValue: coupon.discountValue,
+        code: c.code,
+        discountType: c.discount_type,
+        discountValue: c.discount_value,
         discountAmount,
       },
     });

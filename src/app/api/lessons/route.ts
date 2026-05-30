@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { startOfDay, endOfDay } from "date-fns";
 import { devSlots } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export async function GET(req: NextRequest) {
@@ -26,29 +26,29 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const slots = await prisma.slot.findMany({
-      where: {
-        startAt: { gte: startOfDay(date), lte: endOfDay(date) },
-        ...(studioId ? { studioId } : {}),
-      },
-      include: {
-        studio: true,
-        _count: { select: { bookings: { where: { status: { not: "CANCELLED" } } } } },
-      },
-      orderBy: { startAt: "asc" },
-    });
+    const db = getAdminClient();
+
+    let query = db.from("slots")
+      .select("id, studio_id, start_at, duration_min, capacity, price, studio:studios(name, address), bookings(status)")
+      .gte("start_at", startOfDay(date).toISOString())
+      .lte("start_at", endOfDay(date).toISOString())
+      .order("start_at", { ascending: true });
+
+    if (studioId) query = query.eq("studio_id", studioId);
+
+    const { data: slots, error } = await query;
+    if (error) throw error;
 
     return NextResponse.json(
-      slots.map((s) => ({
+      (slots ?? []).map((s: any) => ({
         id: s.id,
-        studioId: s.studioId,
-        studioName: s.studio.name,
-        studioAddress: s.studio.address,
-        startAt: s.startAt.toISOString(),
-        durationMin: s.durationMin,
+        studioId: s.studio_id,
+        studioName: s.studio?.name ?? "",
+        studioAddress: s.studio?.address ?? "",
+        startAt: s.start_at,
+        durationMin: s.duration_min,
         capacity: s.capacity,
-        bookedCount: s._count.bookings,
+        bookedCount: (s.bookings ?? []).filter((b: any) => b.status !== "CANCELLED").length,
         price: s.price,
       }))
     );

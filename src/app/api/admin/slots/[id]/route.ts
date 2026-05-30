@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { devSlots } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export async function DELETE(
@@ -20,14 +20,19 @@ export async function DELETE(
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const hasBookings = await prisma.booking.count({
-      where: { slotId: id, status: { not: "CANCELLED" } },
-    });
-    if (hasBookings > 0) {
+    const db = getAdminClient();
+
+    const { count: hasBookings } = await db.from("bookings")
+      .select("*", { count: "exact", head: true })
+      .eq("slot_id", id)
+      .neq("status", "CANCELLED");
+
+    if ((hasBookings ?? 0) > 0) {
       return NextResponse.json({ error: "予約があるスロットは削除できません" }, { status: 400 });
     }
-    await prisma.slot.delete({ where: { id } });
+
+    const { error } = await db.from("slots").delete().eq("id", id);
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Admin slot DELETE error:", err);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDevMode() {
   return (
@@ -17,8 +18,7 @@ function getTwilioClient() {
 }
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export async function POST(req: NextRequest) {
@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
 
   // DB lookup / create
   if (!isDbAvailable()) {
-    // Dev fallback: return mock customer when DB is not configured
     const mockCustomer = {
       id: `dev-${phone}`,
       phone,
@@ -66,12 +65,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    let customer = await prisma.customer.findUnique({ where: { phone } });
-    const isNew = !customer;
+    const db = getAdminClient();
+    const { data: existing } = await db.from("customers")
+      .select("id, phone, email, last_name, first_name, genres")
+      .eq("phone", phone)
+      .maybeSingle();
+
+    const isNew = !existing;
+    let customer = existing as any;
 
     if (!customer) {
-      customer = await prisma.customer.create({ data: { phone } });
+      const { data: created, error: createErr } = await db.from("customers")
+        .insert({ phone })
+        .select("id, phone, email, last_name, first_name, genres")
+        .single();
+      if (createErr) throw createErr;
+      customer = created as any;
     }
 
     return NextResponse.json({
@@ -79,9 +88,9 @@ export async function POST(req: NextRequest) {
         id: customer.id,
         phone: customer.phone,
         email: customer.email,
-        lastName: customer.lastName,
-        firstName: customer.firstName,
-        genres: customer.genres,
+        lastName: customer.last_name,
+        firstName: customer.first_name,
+        genres: customer.genres ?? [],
       },
       isNew,
     });

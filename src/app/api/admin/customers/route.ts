@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { devCustomers } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 async function requireAdmin() {
@@ -41,59 +41,59 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
+    const db = getAdminClient();
 
-    const where = {
-      ...(segment !== "ALL" ? { tag: segment as any } : {}),
-      ...(search
-        ? {
-            OR: [
-              { phone: { contains: search } },
-              { email: { contains: search, mode: "insensitive" as const } },
-              { lastName: { contains: search } },
-              { firstName: { contains: search } },
-            ],
-          }
-        : {}),
-    };
+    // Build main query with count
+    let query = db.from("customers")
+      .select("id, phone, email, last_name, first_name, tag, total_bookings, total_spent, last_booked_at, created_at", { count: "exact" })
+      .order("total_spent", { ascending: false })
+      .range((page - 1) * limit, page * limit - 1);
 
-    const [customers, total, counts] = await Promise.all([
-      prisma.customer.findMany({
-        where,
-        orderBy: { totalSpent: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
-        select: {
-          id: true,
-          phone: true,
-          email: true,
-          lastName: true,
-          firstName: true,
-          tag: true,
-          totalBookings: true,
-          totalSpent: true,
-          lastBookedAt: true,
-          createdAt: true,
-        },
-      }),
-      prisma.customer.count({ where }),
-      prisma.customer.groupBy({ by: ["tag"], _count: { id: true } }),
-    ]);
-
-    const countMap: Record<string, number> = { ALL: 0, VIP: 0, FREQUENT: 0, REGULAR: 0, NEW: 0 };
-    for (const c of counts) {
-      countMap[c.tag] = c._count.id;
-      countMap.ALL += c._count.id;
+    if (segment !== "ALL") query = query.eq("tag", segment);
+    if (search) {
+      query = query.or(
+        `phone.ilike.%${search}%,email.ilike.%${search}%,last_name.ilike.%${search}%,first_name.ilike.%${search}%`
+      );
     }
 
+    const { data: customers, count: total } = await query;
+
+    // Tag counts (no search/segment filter — same as original groupBy)
+    const [
+      { count: allCount },
+      { count: vipCount },
+      { count: frequentCount },
+      { count: regularCount },
+      { count: newCount },
+    ] = await Promise.all([
+      db.from("customers").select("*", { count: "exact", head: true }),
+      db.from("customers").select("*", { count: "exact", head: true }).eq("tag", "VIP"),
+      db.from("customers").select("*", { count: "exact", head: true }).eq("tag", "FREQUENT"),
+      db.from("customers").select("*", { count: "exact", head: true }).eq("tag", "REGULAR"),
+      db.from("customers").select("*", { count: "exact", head: true }).eq("tag", "NEW"),
+    ]);
+
     return NextResponse.json({
-      customers: customers.map((c) => ({
-        ...c,
-        lastBookedAt: c.lastBookedAt?.toISOString() ?? null,
-        createdAt: c.createdAt.toISOString(),
+      customers: (customers ?? []).map((c: any) => ({
+        id: c.id,
+        phone: c.phone,
+        email: c.email,
+        lastName: c.last_name,
+        firstName: c.first_name,
+        tag: c.tag,
+        totalBookings: c.total_bookings,
+        totalSpent: c.total_spent,
+        lastBookedAt: c.last_booked_at ?? null,
+        createdAt: c.created_at,
       })),
-      total,
-      counts: countMap,
+      total: total ?? 0,
+      counts: {
+        ALL: allCount ?? 0,
+        VIP: vipCount ?? 0,
+        FREQUENT: frequentCount ?? 0,
+        REGULAR: regularCount ?? 0,
+        NEW: newCount ?? 0,
+      },
     });
   } catch (err) {
     console.error(err);

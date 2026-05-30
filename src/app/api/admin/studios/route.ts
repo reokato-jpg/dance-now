@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { devStudios } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 async function requireAdmin() {
@@ -21,22 +21,31 @@ export async function GET() {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const studios = await prisma.studio.findMany({
-      include: { _count: { select: { slots: true } } },
-      orderBy: { createdAt: "asc" },
-    });
+    const db = getAdminClient();
+
+    const [{ data: studios }, { data: slotRows }] = await Promise.all([
+      db.from("studios")
+        .select("id, name, address, capacity, price_per_hour, open_at, close_at, created_at")
+        .order("created_at", { ascending: true }),
+      db.from("slots").select("studio_id"),
+    ]);
+
+    const slotCountMap = new Map<string, number>();
+    for (const s of slotRows ?? []) {
+      slotCountMap.set((s as any).studio_id, (slotCountMap.get((s as any).studio_id) ?? 0) + 1);
+    }
+
     return NextResponse.json(
-      studios.map((s) => ({
+      (studios ?? []).map((s: any) => ({
         id: s.id,
         name: s.name,
         address: s.address,
         capacity: s.capacity,
-        pricePerHour: s.pricePerHour,
-        openAt: s.openAt,
-        closeAt: s.closeAt,
-        lessonCount: s._count.slots,
-        createdAt: s.createdAt.toISOString(),
+        pricePerHour: s.price_per_hour,
+        openAt: s.open_at,
+        closeAt: s.close_at,
+        lessonCount: slotCountMap.get(s.id) ?? 0,
+        createdAt: s.created_at,
       }))
     );
   } catch (err) {
@@ -72,18 +81,32 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const studio = await prisma.studio.create({
-      data: {
+    const db = getAdminClient();
+    const { data: studio, error } = await db.from("studios")
+      .insert({
         name: name.trim(),
         address: address.trim(),
         capacity: Number(capacity),
-        pricePerHour: Number(pricePerHour) || 3000,
-        openAt: openAt || "10:00",
-        closeAt: closeAt || "22:00",
-      },
-    });
-    return NextResponse.json({ ...studio, lessonCount: 0 }, { status: 201 });
+        price_per_hour: Number(pricePerHour) || 3000,
+        open_at: openAt || "10:00",
+        close_at: closeAt || "22:00",
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json({
+      id: studio.id,
+      name: studio.name,
+      address: studio.address,
+      capacity: studio.capacity,
+      pricePerHour: studio.price_per_hour,
+      openAt: studio.open_at,
+      closeAt: studio.close_at,
+      lessonCount: 0,
+      createdAt: studio.created_at,
+    }, { status: 201 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "作成失敗" }, { status: 500 });

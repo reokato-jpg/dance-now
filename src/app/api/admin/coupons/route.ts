@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { devCoupons, DevCoupon } from "@/lib/dev-stores";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 async function requireAdmin() {
@@ -20,19 +20,24 @@ export async function GET() {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const coupons = await prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });
+    const db = getAdminClient();
+    const { data: coupons, error } = await db.from("coupons")
+      .select("id, code, discount_type, discount_value, valid_until, usage_limit, usage_count, is_active, created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
     return NextResponse.json(
-      coupons.map((c) => ({
+      (coupons ?? []).map((c: any) => ({
         id: c.id,
         code: c.code,
-        discountType: c.discountType,
-        discountValue: c.discountValue,
-        validUntil: c.validUntil?.toISOString() ?? null,
-        usageLimit: c.usageLimit,
-        usageCount: c.usageCount,
-        isActive: c.isActive,
-        createdAt: c.createdAt.toISOString(),
+        discountType: c.discount_type,
+        discountValue: c.discount_value,
+        validUntil: c.valid_until ?? null,
+        usageLimit: c.usage_limit,
+        usageCount: c.usage_count,
+        isActive: c.is_active,
+        createdAt: c.created_at,
       }))
     );
   } catch (err) {
@@ -73,19 +78,35 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const coupon = await prisma.coupon.create({
-      data: {
+    const db = getAdminClient();
+    const { data: coupon, error } = await db.from("coupons")
+      .insert({
         code: code.trim().toUpperCase(),
-        discountType,
-        discountValue: Number(discountValue),
-        validUntil: validUntil ? new Date(validUntil) : null,
-        usageLimit: usageLimit ? Number(usageLimit) : null,
-      },
-    });
-    return NextResponse.json({ ...coupon, createdAt: coupon.createdAt.toISOString() }, { status: 201 });
+        discount_type: discountType,
+        discount_value: Number(discountValue),
+        valid_until: validUntil ? new Date(validUntil).toISOString() : null,
+        usage_limit: usageLimit ? Number(usageLimit) : null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "23505") return NextResponse.json({ error: "このコードは既に使われています" }, { status: 409 });
+      throw error;
+    }
+
+    return NextResponse.json({
+      id: coupon.id,
+      code: coupon.code,
+      discountType: coupon.discount_type,
+      discountValue: coupon.discount_value,
+      validUntil: coupon.valid_until ?? null,
+      usageLimit: coupon.usage_limit,
+      usageCount: coupon.usage_count,
+      isActive: coupon.is_active,
+      createdAt: coupon.created_at,
+    }, { status: 201 });
   } catch (err: any) {
-    if (err?.code === "P2002") return NextResponse.json({ error: "このコードは既に使われています" }, { status: 409 });
     console.error(err);
     return NextResponse.json({ error: "作成失敗" }, { status: 500 });
   }

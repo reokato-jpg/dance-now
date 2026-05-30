@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAdminClient } from "@/lib/supabase-admin";
 
 function isDbAvailable() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url !== "" && !url.includes("placeholder");
+  return !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
 export async function POST(req: NextRequest) {
@@ -27,27 +27,30 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const customer = await prisma.customer.update({
-      where: { id: customerId },
-      data: {
-        lastName,
-        firstName,
+    const db = getAdminClient();
+    const { data: customer, error } = await db.from("customers")
+      .update({
+        last_name: lastName || null,
+        first_name: firstName || null,
         email: email || null,
-        birthday: birthday ? new Date(birthday) : null,
-        genres,
-      },
-    });
+        birthday: birthday ? new Date(birthday).toISOString() : null,
+        genres: genres || [],
+      })
+      .eq("id", customerId)
+      .select("id, phone, email, last_name, first_name, birthday, genres")
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json({
       customer: {
-        id: customer.id,
-        phone: customer.phone,
-        email: customer.email,
-        lastName: customer.lastName,
-        firstName: customer.firstName,
-        birthday: customer.birthday?.toISOString(),
-        genres: customer.genres,
+        id: (customer as any).id,
+        phone: (customer as any).phone,
+        email: (customer as any).email,
+        lastName: (customer as any).last_name,
+        firstName: (customer as any).first_name,
+        birthday: (customer as any).birthday ?? null,
+        genres: (customer as any).genres,
       },
     });
   } catch (err) {
