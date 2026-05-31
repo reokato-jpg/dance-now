@@ -103,8 +103,8 @@ export async function POST(req: NextRequest) {
       lessonCount: 0,
       createdAt: studio.created_at,
     }, { status: 201 });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "作成失敗" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Studio create error:", JSON.stringify(err, null, 2), err?.message, err?.stack);
+    return NextResponse.json({ error: "作成失敗", detail: err?.message ?? String(err) }, { status: 500 });
   }
 }
