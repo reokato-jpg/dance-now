@@ -29,10 +29,10 @@ export default function PaymentMethodPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
       <div className="max-w-md mx-auto px-4 py-6">
-        <button onClick={() => router.back()} className="flex items-center gap-1 text-ink-400 hover:text-white mb-5 text-sm">
+        <button onClick={() => router.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 mb-5 text-sm">
           <ArrowLeft className="w-4 h-4" /> 戻る
         </button>
 
@@ -41,14 +41,14 @@ export default function PaymentMethodPage() {
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-2">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                s <= 2 ? "brand-gradient text-white" : "bg-ink-700 text-ink-500"
+                s <= 2 ? "brand-gradient text-white" : "bg-gray-200 text-gray-400"
               }`}>{s}</div>
-              {s < 3 && <div className={`h-px w-8 ${s < 2 ? "bg-brand-purple" : "bg-ink-700"}`} />}
+              {s < 3 && <div className={`h-px w-8 ${s < 2 ? "bg-brand-purple" : "bg-gray-200"}`} />}
             </div>
           ))}
         </div>
 
-        <h1 className="text-2xl font-bold text-white mb-1">支払い方法</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">支払い方法</h1>
         <p className="text-brand-purple font-bold text-lg mb-6">{formatPrice(finalAmount)}</p>
 
         <div className="space-y-3 mb-6">
@@ -56,20 +56,20 @@ export default function PaymentMethodPage() {
           <button
             onClick={() => setMethod("paypay")}
             className={cn(
-              "w-full card-dark p-4 flex items-center gap-4 hover:border-[#FF0033] transition-colors text-left",
-              method === "paypay" ? "border-[#FF0033] bg-[#FF0033]/10" : ""
+              "w-full card-light p-4 flex items-center gap-4 hover:border-[#FF0033] transition-colors text-left",
+              method === "paypay" ? "border-[#FF0033] bg-[#FF0033]/5" : ""
             )}
           >
             <div className="w-12 h-12 bg-[#FF0033] rounded-xl flex items-center justify-center flex-shrink-0">
               <QrCode className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="font-bold text-white">PayPay</p>
-              <p className="text-xs text-ink-400">QRコードでかんたん支払い</p>
+              <p className="font-bold text-gray-900">PayPay</p>
+              <p className="text-xs text-gray-500">QRコードでかんたん支払い</p>
             </div>
             <div className="ml-auto">
               <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                method === "paypay" ? "border-[#FF0033] bg-[#FF0033]" : "border-ink-600"
+                method === "paypay" ? "border-[#FF0033] bg-[#FF0033]" : "border-gray-300"
               )}>
                 {method === "paypay" && <div className="w-2 h-2 rounded-full bg-white" />}
               </div>
@@ -80,20 +80,20 @@ export default function PaymentMethodPage() {
           <button
             onClick={() => setMethod("stripe")}
             className={cn(
-              "w-full card-dark p-4 flex items-center gap-4 hover:border-brand-purple transition-colors text-left",
-              method === "stripe" ? "border-brand-purple bg-brand-purple/10" : ""
+              "w-full card-light p-4 flex items-center gap-4 hover:border-brand-purple transition-colors text-left",
+              method === "stripe" ? "border-brand-purple bg-brand-purple/5" : ""
             )}
           >
             <div className="w-12 h-12 brand-gradient rounded-xl flex items-center justify-center flex-shrink-0">
               <CreditCard className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="font-bold text-white">クレジットカード</p>
-              <p className="text-xs text-ink-400">VISA / Mastercard / JCB / AMEX</p>
+              <p className="font-bold text-gray-900">クレジットカード</p>
+              <p className="text-xs text-gray-500">VISA / Mastercard / JCB / AMEX</p>
             </div>
             <div className="ml-auto">
               <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                method === "stripe" ? "border-brand-purple bg-brand-purple" : "border-ink-600"
+                method === "stripe" ? "border-brand-purple bg-brand-purple" : "border-gray-300"
               )}>
                 {method === "stripe" && <div className="w-2 h-2 rounded-full bg-white" />}
               </div>
@@ -105,7 +105,7 @@ export default function PaymentMethodPage() {
           {formatPrice(finalAmount)} を支払う
         </Button>
 
-        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-ink-500">
+        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400">
           <Shield className="w-3.5 h-3.5" />
           <span>SSL暗号化で保護されています</span>
         </div>

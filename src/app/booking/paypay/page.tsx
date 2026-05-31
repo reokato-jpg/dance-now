@@ -103,10 +103,10 @@ export default function PayPayPage() {
     `${String(Math.floor(timer / 60)).padStart(2, "0")}:${String(timer % 60).padStart(2, "0")}`;
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
       <div className="max-w-md mx-auto px-4 py-6">
-        <button onClick={() => router.back()} className="flex items-center gap-1 text-ink-400 hover:text-white mb-5 text-sm">
+        <button onClick={() => router.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 mb-5 text-sm">
           <ArrowLeft className="w-4 h-4" /> 戻る
         </button>
 
@@ -114,31 +114,31 @@ export default function PayPayPage() {
           <div className="w-16 h-16 bg-[#FF0033] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#FF0033]/30">
             <QrCode className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-1">PayPay で支払う</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">PayPay で支払う</h1>
           <p className="text-brand-purple font-bold text-xl mb-1">{formatPrice(finalAmount)}</p>
         </div>
 
         {loading ? (
-          <div className="card-dark h-64 animate-pulse mt-6" />
+          <div className="card-light h-64 animate-pulse mt-6" />
         ) : status === "waiting" ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
-            <div className="card-dark p-6 flex flex-col items-center">
-              <p className="text-xs text-ink-400 mb-4">PCの場合: QRコードをスキャン</p>
-              <div className="w-48 h-48 bg-white rounded-xl flex items-center justify-center mb-4">
+            <div className="card-light p-6 flex flex-col items-center">
+              <p className="text-xs text-gray-500 mb-4">PCの場合: QRコードをスキャン</p>
+              <div className="w-48 h-48 bg-white rounded-xl flex items-center justify-center mb-4 border border-gray-100">
                 {qrUrl ? (
                   <img src={qrUrl} alt="PayPay QR" className="w-44 h-44" />
                 ) : (
-                  <div className="w-44 h-44 bg-ink-200 rounded-lg animate-pulse" />
+                  <div className="w-44 h-44 bg-gray-200 rounded-lg animate-pulse" />
                 )}
               </div>
-              <p className="text-sm font-mono text-ink-400">
-                残り <span className="text-white font-bold">{formatTimer()}</span>
+              <p className="text-sm font-mono text-gray-500">
+                残り <span className="text-gray-900 font-bold">{formatTimer()}</span>
               </p>
             </div>
 
             {deepLink && (
               <div className="mt-4">
-                <p className="text-xs text-center text-ink-400 mb-3">スマートフォンの場合</p>
+                <p className="text-xs text-center text-gray-500 mb-3">スマートフォンの場合</p>
                 <a href={deepLink} className="block">
                   <Button variant="secondary" className="w-full gap-2">
                     <Smartphone className="w-5 h-5" />
@@ -152,7 +152,7 @@ export default function PayPayPage() {
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-10 text-center">
             <div className="text-6xl mb-4">✅</div>
             <p className="text-xl font-bold text-success">支払い完了</p>
-            <p className="text-ink-400 text-sm mt-1">予約を確定しています...</p>
+            <p className="text-gray-500 text-sm mt-1">予約を確定しています...</p>
           </motion.div>
         ) : (
           <div className="mt-10 text-center">

@@ -50,26 +50,26 @@ export default function LessonsPage() {
   const available = (s: Slot) => s.capacity - s.bookedCount;
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Title */}
         <div className="mb-5">
-          <h2 className="font-display text-4xl text-white tracking-wider">BOOK A STUDIO</h2>
-          <p className="text-ink-400 text-sm">スタジオを選んで時間を予約しよう</p>
+          <h2 className="font-display text-4xl text-gray-900 tracking-wider">BOOK A STUDIO</h2>
+          <p className="text-gray-500 text-sm">スタジオを選んで時間を予約しよう</p>
         </div>
 
         {/* Week calendar */}
-        <div className="card-dark p-4 mb-4">
+        <div className="card-light p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <button onClick={() => setWeekOffset((v) => v - 1)} className="p-1 text-ink-400 hover:text-white">
+            <button onClick={() => setWeekOffset((v) => v - 1)} className="p-1 text-gray-500 hover:text-gray-900">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <span className="text-sm font-bold text-white">
+            <span className="text-sm font-bold text-gray-900">
               {format(weekStart, "yyyy年M月", { locale: ja })}
             </span>
-            <button onClick={() => setWeekOffset((v) => v + 1)} className="p-1 text-ink-400 hover:text-white">
+            <button onClick={() => setWeekOffset((v) => v + 1)} className="p-1 text-gray-500 hover:text-gray-900">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
@@ -83,12 +83,12 @@ export default function LessonsPage() {
                   onClick={() => setSelectedDate(day)}
                   className={cn(
                     "flex flex-col items-center py-2 rounded-lg transition-all",
-                    isSelected ? "brand-gradient text-white shadow-glow-purple" : "hover:bg-ink-700",
+                    isSelected ? "brand-gradient text-white shadow-glow-purple" : "hover:bg-gray-100",
                     isToday && !isSelected ? "border border-brand-purple" : ""
                   )}
                 >
-                  <span className="text-xs text-ink-400">{format(day, "E", { locale: ja })}</span>
-                  <span className="text-sm font-bold text-white">{format(day, "d")}</span>
+                  <span className="text-xs text-gray-500">{format(day, "E", { locale: ja })}</span>
+                  <span className="text-sm font-bold text-gray-900">{format(day, "d")}</span>
                 </button>
               );
             })}
@@ -104,7 +104,7 @@ export default function LessonsPage() {
                 "flex-shrink-0 px-4 py-1.5 rounded-pill text-xs font-bold transition-all flex items-center gap-1.5",
                 activeStudio === "ALL"
                   ? "bg-brand-purple text-white shadow-glow-purple"
-                  : "bg-ink-700 text-ink-400 hover:text-white"
+                  : "bg-gray-100 text-gray-500 hover:text-gray-900"
               )}
             >
               <Building2 className="w-3 h-3" /> すべて
@@ -117,7 +117,7 @@ export default function LessonsPage() {
                   "flex-shrink-0 px-4 py-1.5 rounded-pill text-xs font-bold transition-all",
                   activeStudio === s.id
                     ? "bg-brand-purple text-white shadow-glow-purple"
-                    : "bg-ink-700 text-ink-400 hover:text-white"
+                    : "bg-gray-100 text-gray-500 hover:text-gray-900"
                 )}
               >
                 Studio {s.name}
@@ -130,11 +130,11 @@ export default function LessonsPage() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="card-dark h-20 animate-pulse" />
+              <div key={i} className="card-light h-20 animate-pulse" />
             ))}
           </div>
         ) : slots.length === 0 ? (
-          <div className="text-center py-16 text-ink-500">
+          <div className="text-center py-16 text-gray-400">
             <p className="text-4xl mb-3">🏢</p>
             <p className="font-bold">この日の空き枠はありません</p>
           </div>
@@ -151,25 +151,25 @@ export default function LessonsPage() {
                   transition={{ delay: i * 0.05 }}
                 >
                   <Link href={`/lessons/${slot.id}`}>
-                    <div className="card-dark p-4 hover:border-brand-purple transition-colors cursor-pointer">
+                    <div className="card-light p-4 hover:border-brand-purple transition-colors cursor-pointer">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                            <span className="text-xs font-bold text-ink-400 uppercase">
+                            <span className="text-xs font-bold text-gray-500 uppercase">
                               Studio {slot.studioName}
                             </span>
                           </div>
-                          <p className="text-lg font-bold text-white">
+                          <p className="text-lg font-bold text-gray-900">
                             {formatTimeRange(slot.startAt, slot.durationMin)}
                           </p>
-                          <p className="text-xs text-ink-400 mt-0.5">{slot.durationMin}分</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{slot.durationMin}分</p>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="font-bold text-white">{formatPrice(slot.price)}</p>
+                          <p className="font-bold text-gray-900">{formatPrice(slot.price)}</p>
                           <p className={cn(
                             "text-xs mt-0.5",
-                            available(slot) <= 0 ? "text-danger font-bold" : available(slot) <= 3 ? "text-warning font-bold" : "text-ink-400"
+                            available(slot) <= 0 ? "text-danger font-bold" : available(slot) <= 3 ? "text-warning font-bold" : "text-gray-400"
                           )}>
                             {available(slot) <= 0 ? "満員" : `残${available(slot)}枠`}
                           </p>

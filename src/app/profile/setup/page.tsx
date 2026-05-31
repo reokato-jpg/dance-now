@@ -73,46 +73,46 @@ export default function ProfileSetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-900 px-6 py-10">
+    <div className="min-h-screen bg-white px-6 py-10">
       <div className="max-w-md mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-8">
             <p className="text-xs text-brand-purple font-bold tracking-widest uppercase mb-2">Step 1 of 1</p>
-            <h1 className="text-3xl font-bold text-white">プロフィール設定</h1>
-            <p className="text-ink-400 text-sm mt-1">レッスンをもっと楽しくするために教えてください</p>
+            <h1 className="text-3xl font-bold text-gray-900">プロフィール設定</h1>
+            <p className="text-gray-500 text-sm mt-1">レッスンをもっと楽しくするために教えてください</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-1.5 block">姓</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">姓</label>
                 <Input {...register("lastName")} placeholder="田中" />
                 {errors.lastName && <p className="text-danger text-xs mt-1">{errors.lastName.message}</p>}
               </div>
               <div>
-                <label className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-1.5 block">名</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">名</label>
                 <Input {...register("firstName")} placeholder="花子" />
                 {errors.firstName && <p className="text-danger text-xs mt-1">{errors.firstName.message}</p>}
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-1.5 block">
-                メールアドレス <span className="text-ink-600">(任意)</span>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">
+                メールアドレス <span className="text-gray-400">(任意)</span>
               </label>
               <Input {...register("email")} type="email" placeholder="hanako@example.com" />
               {errors.email && <p className="text-danger text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             <div>
-              <label className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-1.5 block">生年月日</label>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">生年月日</label>
               <Input {...register("birthday")} type="date" />
               {errors.birthday && <p className="text-danger text-xs mt-1">{errors.birthday.message}</p>}
             </div>
 
             <div>
-              <label className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3 block">
-                興味のあるジャンル <span className="text-ink-600">(複数選択可)</span>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
+                興味のあるジャンル <span className="text-gray-400">(複数選択可)</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {GENRES.map((g) => (
@@ -124,7 +124,7 @@ export default function ProfileSetupPage() {
                       "px-4 py-2 rounded-pill text-xs font-bold transition-all border-2",
                       selectedGenres.includes(g.id)
                         ? `${g.color} text-white border-transparent shadow-glow-purple`
-                        : "bg-transparent border-ink-600 text-ink-400 hover:border-ink-400"
+                        : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-500"
                     )}
                   >
                     {g.label}

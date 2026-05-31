@@ -96,7 +96,7 @@ export default function OtpPage() {
     phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
 
   return (
-    <div className="min-h-screen bg-ink-900 flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -106,9 +106,9 @@ export default function OtpPage() {
           <div className="w-16 h-16 brand-gradient rounded-full flex items-center justify-center mx-auto mb-4 shadow-glow-purple">
             <span className="text-2xl">📱</span>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">認証コードを入力</h1>
-          <p className="text-ink-400 text-sm">
-            <span className="text-white font-mono">{pendingPhone ? formatPhone(pendingPhone) : ""}</span>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">認証コードを入力</h1>
+          <p className="text-gray-500 text-sm">
+            <span className="text-gray-900 font-mono">{pendingPhone ? formatPhone(pendingPhone) : ""}</span>
             <br />に送信された6桁のコードを入力してください
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function OtpPage() {
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
-              className="w-11 h-14 text-center text-xl font-bold font-mono bg-ink-700 border-2 border-ink-600 rounded-lg text-white focus:outline-none focus:border-brand-purple transition-colors"
+              className="w-11 h-14 text-center text-xl font-bold font-mono bg-gray-50 border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-brand-purple transition-colors"
             />
           ))}
         </div>
@@ -133,8 +133,8 @@ export default function OtpPage() {
         {/* Timer */}
         <div className="text-center mb-6">
           {resendTimer > 0 ? (
-            <p className="text-ink-500 text-sm">
-              再送まで <span className="font-mono text-white">{`0${Math.floor(resendTimer / 60)}:${String(resendTimer % 60).padStart(2, "0")}`}</span>
+            <p className="text-gray-400 text-sm">
+              再送まで <span className="font-mono text-gray-900">{`0${Math.floor(resendTimer / 60)}:${String(resendTimer % 60).padStart(2, "0")}`}</span>
             </p>
           ) : (
             <button onClick={handleResend} className="text-brand-purple text-sm font-bold hover:underline">
@@ -152,7 +152,7 @@ export default function OtpPage() {
           {loading ? "確認中..." : "認証する"}
         </Button>
 
-        <button onClick={() => router.push("/login")} className="w-full text-center text-ink-500 text-sm mt-4 hover:text-white">
+        <button onClick={() => router.push("/login")} className="w-full text-center text-gray-400 text-sm mt-4 hover:text-gray-900">
           電話番号を変更する
         </button>
       </motion.div>

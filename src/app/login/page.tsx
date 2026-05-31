@@ -54,7 +54,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-900 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Hero */}
       <div className="brand-gradient py-16 px-6 text-center">
         <motion.div
@@ -78,17 +78,17 @@ export default function LoginPage() {
         >
           {lesson ? (
             <>
-              <h2 className="text-2xl font-bold text-white mb-2">ログイン / 新規登録</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">ログイン / 新規登録</h2>
               <div className="bg-brand-purple/10 border border-brand-purple/30 rounded-xl p-3 mb-6">
                 <p className="text-xs text-brand-purple font-bold mb-0.5">予約するスタジオ</p>
-                <p className="text-sm text-white font-bold truncate">Studio {lesson.studioName}</p>
-                <p className="text-xs text-ink-400 mt-0.5">ログイン後すぐに予約確認に進みます</p>
+                <p className="text-sm text-gray-900 font-bold truncate">Studio {lesson.studioName}</p>
+                <p className="text-xs text-gray-500 mt-0.5">ログイン後すぐに予約確認に進みます</p>
               </div>
             </>
           ) : (
             <>
-              <h2 className="text-2xl font-bold text-white mb-2">ログイン / 新規登録</h2>
-              <p className="text-ink-400 text-sm mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">ログイン / 新規登録</h2>
+              <p className="text-gray-500 text-sm mb-8">
                 携帯電話番号を入力するとSMSで認証コードを送ります
               </p>
             </>
@@ -96,11 +96,11 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-2 block">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">
                 電話番号
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 text-sm font-mono">+81</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-mono">+81</span>
                 <Input
                   {...register("phone")}
                   type="tel"
@@ -115,7 +115,7 @@ export default function LoginPage() {
               )}
             </div>
 
-            <div className="flex items-start gap-2 text-xs text-ink-400">
+            <div className="flex items-start gap-2 text-xs text-gray-500">
               <input type="checkbox" required className="mt-0.5 accent-brand-purple" />
               <span>
                 <a href="/terms" className="text-brand-purple">利用規約</a>・
@@ -131,7 +131,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="text-center text-xs text-ink-500 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-6">
             <Phone className="w-3 h-3 inline mr-1" />
             Twilioにより安全に認証します
           </p>

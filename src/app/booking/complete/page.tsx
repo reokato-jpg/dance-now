@@ -38,7 +38,7 @@ function BookingCompleteContent() {
     if (booking?.reservationNo) {
       QRCode.toDataURL(
         `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/ticket/${booking.reservationNo}`,
-        { width: 200, margin: 2, color: { dark: "#0F0A1F", light: "#FFFFFF" } }
+        { width: 200, margin: 2, color: { dark: "#1f2937", light: "#FFFFFF" } }
       ).then(setQrDataUrl);
     }
   }, [booking]);
@@ -70,7 +70,7 @@ function BookingCompleteContent() {
   const studioName = slot?.studioName ?? slot?.studio?.name ?? "";
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
       <div className="max-w-md mx-auto px-4 py-6">
         <motion.div
@@ -87,8 +87,8 @@ function BookingCompleteContent() {
           >
             <span className="text-4xl">🎉</span>
           </motion.div>
-          <h1 className="text-3xl font-bold text-white mb-1">予約完了！</h1>
-          <p className="text-ink-400">当日はこのQRコードを提示してください</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">予約完了！</h1>
+          <p className="text-gray-500">当日はこのQRコードを提示してください</p>
         </motion.div>
 
         {booking ? (
@@ -102,32 +102,32 @@ function BookingCompleteContent() {
               </div>
 
               <div className="relative h-px mx-4">
-                <div className="absolute inset-0 border-t-2 border-dashed border-ink-600" />
-                <div className="absolute -left-6 -top-3 w-6 h-6 bg-ink-900 rounded-full" />
-                <div className="absolute -right-6 -top-3 w-6 h-6 bg-ink-900 rounded-full" />
+                <div className="absolute inset-0 border-t-2 border-dashed border-gray-300" />
+                <div className="absolute -left-6 -top-3 w-6 h-6 bg-gray-50 rounded-full" />
+                <div className="absolute -right-6 -top-3 w-6 h-6 bg-gray-50 rounded-full" />
               </div>
 
-              <div className="bg-ink-800 p-5 flex items-center gap-5">
+              <div className="bg-white p-5 flex items-center gap-5">
                 <div className="flex-1 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-ink-400">日時</span>
-                    <span className="text-white font-medium">
+                    <span className="text-gray-500">日時</span>
+                    <span className="text-gray-900 font-medium">
                       {slot?.startAt ? formatDate(slot.startAt) : ""}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-ink-400">時間</span>
-                    <span className="text-white">
+                    <span className="text-gray-500">時間</span>
+                    <span className="text-gray-900">
                       {slot?.startAt ? formatTimeRange(slot.startAt, slot.durationMin) : ""}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-ink-400">金額</span>
+                    <span className="text-gray-500">金額</span>
                     <span className="text-brand-purple font-bold">{formatPrice(booking.amount - booking.discountAmount)}</span>
                   </div>
                 </div>
                 {qrDataUrl && (
-                  <div className="w-24 h-24 bg-white rounded-xl p-1.5 flex-shrink-0">
+                  <div className="w-24 h-24 bg-white rounded-xl p-1.5 flex-shrink-0 border border-gray-100">
                     <img src={qrDataUrl} alt="QR" className="w-full h-full" />
                   </div>
                 )}
@@ -147,7 +147,7 @@ function BookingCompleteContent() {
             </div>
           </motion.div>
         ) : (
-          <div className="card-dark h-80 animate-pulse" />
+          <div className="card-light h-80 animate-pulse" />
         )}
       </div>
     </div>
@@ -156,7 +156,7 @@ function BookingCompleteContent() {
 
 export default function BookingCompletePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-ink-900" />}>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
       <BookingCompleteContent />
     </Suspense>
   );

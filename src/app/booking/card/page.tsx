@@ -53,9 +53,9 @@ function DevCardForm() {
 
   return (
     <div>
-      <div className="card-dark p-5 mb-4 border border-dashed border-yellow-500/50 bg-yellow-500/5">
-        <p className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-1">開発モード</p>
-        <p className="text-sm text-ink-400">Stripe 未設定のためテスト支払いをシミュレートします。</p>
+      <div className="p-5 mb-4 border border-dashed border-yellow-500/50 bg-yellow-500/5 rounded-lg">
+        <p className="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-1">開発モード</p>
+        <p className="text-sm text-gray-500">Stripe 未設定のためテスト支払いをシミュレートします。</p>
       </div>
       <Button onClick={handleDevPay} disabled={loading} className="w-full" size="lg">
         {loading ? "処理中..." : `${formatPrice(finalAmount)} を支払う（テスト）`}
@@ -114,12 +114,12 @@ function CardForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="card-dark p-5 mb-4">
-        <p className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3">カード情報</p>
+      <div className="card-light p-5 mb-4">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">カード情報</p>
         <PaymentElement options={{ layout: "tabs" }} />
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-ink-500 mb-6">
+      <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
         <Lock className="w-3.5 h-3.5" />
         <span>Stripe により PCI DSS 準拠で安全に処理されます</span>
       </div>
@@ -162,10 +162,10 @@ export default function CardPage() {
   if (!lesson) return null;
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
       <div className="max-w-md mx-auto px-4 py-6">
-        <button onClick={() => router.back()} className="flex items-center gap-1 text-ink-400 hover:text-white mb-5 text-sm">
+        <button onClick={() => router.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 mb-5 text-sm">
           <ArrowLeft className="w-4 h-4" /> 戻る
         </button>
 
@@ -173,14 +173,14 @@ export default function CardPage() {
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-2">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                s <= 2 ? "brand-gradient text-white" : "bg-ink-700 text-ink-500"
+                s <= 2 ? "brand-gradient text-white" : "bg-gray-200 text-gray-400"
               }`}>{s}</div>
-              {s < 3 && <div className={`h-px w-8 ${s < 2 ? "bg-brand-purple" : "bg-ink-700"}`} />}
+              {s < 3 && <div className={`h-px w-8 ${s < 2 ? "bg-brand-purple" : "bg-gray-200"}`} />}
             </div>
           ))}
         </div>
 
-        <h1 className="text-2xl font-bold text-white mb-1">クレジットカード</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">クレジットカード</h1>
         <p className="text-brand-purple font-bold text-lg mb-6">{formatPrice(finalAmount)}</p>
 
         {devMode ? (
@@ -192,11 +192,9 @@ export default function CardPage() {
               clientSecret,
               locale: "ja",
               appearance: {
-                theme: "night",
+                theme: "stripe",
                 variables: {
                   colorPrimary: "#6B46C1",
-                  colorBackground: "#1A1035",
-                  colorText: "#ffffff",
                   borderRadius: "10px",
                 },
               },
@@ -206,11 +204,11 @@ export default function CardPage() {
           </Elements>
         ) : (
           <div className="space-y-3">
-            {[1, 2].map((i) => <div key={i} className="card-dark h-16 animate-pulse" />)}
+            {[1, 2].map((i) => <div key={i} className="card-light h-16 animate-pulse" />)}
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-ink-500">
+        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400">
           <Shield className="w-3.5 h-3.5" />
           <span>3Dセキュア 2.0 対応</span>
         </div>

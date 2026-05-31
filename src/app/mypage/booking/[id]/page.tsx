@@ -40,7 +40,7 @@ export default function BookingDetailPage() {
     }
   };
 
-  if (!booking) return <div className="min-h-screen bg-ink-900"><UserHeader /></div>;
+  if (!booking) return <div className="min-h-screen bg-gray-50"><UserHeader /></div>;
 
   const slot = booking.slot;
   const studioName = slot?.studioName ?? slot?.studio?.name ?? "";
@@ -57,50 +57,50 @@ export default function BookingDetailPage() {
   const refundAmount = Math.floor((booking.amount - booking.discountAmount) * refundRate / 100);
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
       <div className="max-w-md mx-auto px-4 py-6">
-        <button onClick={() => router.back()} className="flex items-center gap-1 text-ink-400 hover:text-white mb-5 text-sm">
+        <button onClick={() => router.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 mb-5 text-sm">
           <ArrowLeft className="w-4 h-4" /> 戻る
         </button>
 
         <div className="space-y-4">
-          <div className="card-dark p-5">
-            <p className="text-xs font-mono text-ink-400">#{booking.reservationNo}</p>
-            <h1 className="text-xl font-bold text-white mt-1 mb-3">Studio {studioName}</h1>
+          <div className="card-light p-5">
+            <p className="text-xs font-mono text-gray-400">#{booking.reservationNo}</p>
+            <h1 className="text-xl font-bold text-gray-900 mt-1 mb-3">Studio {studioName}</h1>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-ink-400">日時</span>
-                <span className="text-white">{slot?.startAt ? formatDate(slot.startAt) : ""}</span>
+                <span className="text-gray-500">日時</span>
+                <span className="text-gray-900">{slot?.startAt ? formatDate(slot.startAt) : ""}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-ink-400">時間</span>
-                <span className="text-white">
+                <span className="text-gray-500">時間</span>
+                <span className="text-gray-900">
                   {slot?.startAt ? formatTimeRange(slot.startAt, slot.durationMin) : ""}
                 </span>
               </div>
-              <div className="flex justify-between border-t border-ink-700 pt-2 mt-2">
-                <span className="text-ink-400">支払い金額</span>
-                <span className="font-bold text-white">{formatPrice(booking.amount - booking.discountAmount)}</span>
+              <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
+                <span className="text-gray-500">支払い金額</span>
+                <span className="font-bold text-gray-900">{formatPrice(booking.amount - booking.discountAmount)}</span>
               </div>
             </div>
           </div>
 
           {/* Cancel policy */}
           {booking.status === "CONFIRMED" && (
-            <div className="card-dark p-5">
-              <p className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3">キャンセルポリシー</p>
+            <div className="card-light p-5">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">キャンセルポリシー</p>
               <div className="space-y-2 text-sm">
                 <div className={`flex justify-between p-2 rounded-lg ${hoursUntil > 24 ? "bg-success/10 border border-success/30" : "opacity-50"}`}>
-                  <span className="text-white">前日18:00まで</span>
+                  <span className="text-gray-900">前日18:00まで</span>
                   <span className="text-success font-bold">100% 返金</span>
                 </div>
                 <div className={`flex justify-between p-2 rounded-lg ${hoursUntil <= 24 && hoursUntil > 0 ? "bg-warning/10 border border-warning/30" : "opacity-50"}`}>
-                  <span className="text-white">当日 (前日18:00以降)</span>
+                  <span className="text-gray-900">当日 (前日18:00以降)</span>
                   <span className="text-warning font-bold">50% 返金</span>
                 </div>
                 <div className="flex justify-between p-2 rounded-lg opacity-50">
-                  <span className="text-white">無断キャンセル</span>
+                  <span className="text-gray-900">無断キャンセル</span>
                   <span className="text-danger font-bold">返金なし</span>
                 </div>
               </div>
@@ -114,9 +114,9 @@ export default function BookingDetailPage() {
                   <div className="flex items-start gap-3 mb-4">
                     <AlertTriangle className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-white">キャンセルの確認</p>
-                      <p className="text-sm text-ink-300 mt-1">
-                        キャンセルポリシー: <span className="font-bold text-white">{refundLabel}</span>
+                      <p className="font-bold text-gray-900">キャンセルの確認</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        キャンセルポリシー: <span className="font-bold text-gray-900">{refundLabel}</span>
                       </p>
                       {refundAmount > 0 && (
                         <p className="text-sm text-success mt-1">返金額: {formatPrice(refundAmount)}（35日以内）</p>

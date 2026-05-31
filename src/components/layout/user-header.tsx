@@ -17,7 +17,7 @@ export function UserHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-ink-900/80 backdrop-blur border-b border-ink-700">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
       <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/lessons" className="font-display text-2xl tracking-wider brand-gradient-text">
           DANCE NOW
@@ -28,7 +28,7 @@ export function UserHeader() {
               href="/lessons"
               className={cn(
                 "p-2 rounded-lg transition-colors",
-                pathname.startsWith("/lessons") ? "text-brand-purple" : "text-ink-400 hover:text-white"
+                pathname.startsWith("/lessons") ? "text-brand-purple" : "text-gray-400 hover:text-gray-900"
               )}
             >
               <Calendar className="w-5 h-5" />
@@ -37,14 +37,14 @@ export function UserHeader() {
               href="/mypage"
               className={cn(
                 "p-2 rounded-lg transition-colors",
-                pathname.startsWith("/mypage") ? "text-brand-purple" : "text-ink-400 hover:text-white"
+                pathname.startsWith("/mypage") ? "text-brand-purple" : "text-gray-400 hover:text-gray-900"
               )}
             >
               <User className="w-5 h-5" />
             </Link>
             <button
               onClick={handleLogout}
-              className="p-2 rounded-lg text-ink-400 hover:text-white transition-colors"
+              className="p-2 rounded-lg text-gray-400 hover:text-gray-900 transition-colors"
             >
               <LogOut className="w-5 h-5" />
             </button>

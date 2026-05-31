@@ -54,15 +54,15 @@ export default function CouponPage() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-gray-50">
       <UserHeader />
       <div className="max-w-md mx-auto px-4 py-6">
-        <button onClick={() => router.back()} className="flex items-center gap-1 text-ink-400 hover:text-white mb-5 text-sm">
+        <button onClick={() => router.back()} className="flex items-center gap-1 text-gray-500 hover:text-gray-900 mb-5 text-sm">
           <ArrowLeft className="w-4 h-4" /> 戻る
         </button>
 
-        <h1 className="text-2xl font-bold text-white mb-1">クーポンを使う</h1>
-        <p className="text-ink-400 text-sm mb-6">コードを入力するか、下のクーポンを選択してください</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">クーポンを使う</h1>
+        <p className="text-gray-500 text-sm mb-6">コードを入力するか、下のクーポンを選択してください</p>
 
         {/* Input */}
         <div className="flex gap-2 mb-6">
@@ -90,11 +90,11 @@ export default function CouponPage() {
             <div className="flex items-center gap-3">
               <Check className="w-5 h-5 text-success" />
               <div>
-                <p className="font-bold text-white font-mono">{coupon.code}</p>
+                <p className="font-bold text-gray-900 font-mono">{coupon.code}</p>
                 <p className="text-xs text-success">-{formatPrice(coupon.discountAmount)} 割引</p>
               </div>
             </div>
-            <button onClick={removeCoupon} className="text-ink-400 hover:text-white">
+            <button onClick={removeCoupon} className="text-gray-400 hover:text-gray-900">
               <X className="w-5 h-5" />
             </button>
           </motion.div>
@@ -102,7 +102,7 @@ export default function CouponPage() {
 
         {/* Available coupons */}
         <div>
-          <p className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3">利用可能なクーポン</p>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">利用可能なクーポン</p>
           <div className="space-y-3">
             {SAMPLE_COUPONS.map((c) => {
               const discountAmt = c.type === "PERCENT"
@@ -110,14 +110,14 @@ export default function CouponPage() {
                 : c.value;
               const isApplied = coupon?.code === c.code;
               return (
-                <div key={c.code} className={`card-dark p-4 flex items-center justify-between ${isApplied ? "border-success" : ""}`}>
+                <div key={c.code} className={`card-light p-4 flex items-center justify-between ${isApplied ? "border-success" : ""}`}>
                   <div className="flex items-start gap-3">
                     <Tag className="w-5 h-5 text-brand-purple mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-bold text-white font-mono text-sm">{c.label}</p>
-                      <p className="text-xs text-ink-300">{c.desc} {c.detail}</p>
+                      <p className="font-bold text-gray-900 font-mono text-sm">{c.label}</p>
+                      <p className="text-xs text-gray-600">{c.desc} {c.detail}</p>
                       <p className="text-xs text-brand-pink font-bold mt-0.5">-{formatPrice(discountAmt)} OFF</p>
-                      <p className="text-xs text-ink-500">{c.expiry}</p>
+                      <p className="text-xs text-gray-400">{c.expiry}</p>
                     </div>
                   </div>
                   {isApplied ? (
@@ -135,7 +135,7 @@ export default function CouponPage() {
 
         <div className="mt-6">
           <div className="flex justify-between mb-4 text-sm">
-            <span className="text-ink-400">合計金額</span>
+            <span className="text-gray-500">合計金額</span>
             <span className="font-bold text-brand-purple text-lg">{formatPrice(finalAmount)}</span>
           </div>
           <Button onClick={() => router.push("/booking/payment")} className="w-full" size="lg">
