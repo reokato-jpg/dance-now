@@ -153,3 +153,11 @@ enum NotificationType {
   CANCEL_REFUND
   COUPON
 }
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}

@@ -102,6 +102,11 @@ export const devCoupons: DevCoupon[] = [
   },
 ];
 
+// ─── Dev Settings ─────────────────────────────────────────
+export const devSettings: Record<string, string> = {
+  coupon_enabled: "true",
+};
+
 // ─── Dev Customers ────────────────────────────────────────
 export interface DevCustomer {
   id: string;

@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, Tag } from "lucide-react";
@@ -34,12 +34,20 @@ export default function BookingConfirmPage() {
   const router = useRouter();
   const { lesson, coupon, finalAmount } = useBookingStore();
   const { customer, _hasHydrated } = useAuthStore();
+  const [couponEnabled, setCouponEnabled] = useState(true);
 
   useEffect(() => {
     if (!_hasHydrated) return;
     if (!lesson) { router.push("/lessons"); return; }
     if (!customer) { router.push("/login"); return; }
   }, [_hasHydrated, lesson, customer, router]);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => setCouponEnabled(d.couponEnabled ?? true))
+      .catch(() => {});
+  }, []);
 
   if (!_hasHydrated || !lesson || !customer) return null;
 
@@ -99,18 +107,20 @@ export default function BookingConfirmPage() {
           </div>
 
           {/* Coupon */}
-          <button
-            onClick={() => router.push("/booking/coupon")}
-            className="w-full card-light p-4 flex items-center justify-between hover:border-brand-purple transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <Tag className="w-5 h-5 text-brand-purple" />
-              <span className="text-sm font-bold text-gray-900">
-                {coupon ? `${coupon.code} 適用中` : "クーポンを使う"}
-              </span>
-            </div>
-            <span className="text-gray-400 text-sm">→</span>
-          </button>
+          {couponEnabled && (
+            <button
+              onClick={() => router.push("/booking/coupon")}
+              className="w-full card-light p-4 flex items-center justify-between hover:border-brand-purple transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Tag className="w-5 h-5 text-brand-purple" />
+                <span className="text-sm font-bold text-gray-900">
+                  {coupon ? `${coupon.code} 適用中` : "クーポンを使う"}
+                </span>
+              </div>
+              <span className="text-gray-400 text-sm">→</span>
+            </button>
+          )}
         </motion.div>
 
         <div className="mt-6">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Tag, Calendar, Trash2, ToggleLeft, ToggleRight, X } from "lucide-react";
+import { Plus, Tag, Calendar, Trash2, ToggleLeft, ToggleRight, X, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,25 @@ export default function AdminCouponsPage() {
   const { data: coupons = [], isLoading } = useQuery<Coupon[]>({
     queryKey: ["admin-coupons"],
     queryFn: () => fetch("/api/admin/coupons").then((r) => r.json()),
+  });
+
+  const { data: settings } = useQuery<Record<string, string>>({
+    queryKey: ["admin-settings"],
+    queryFn: () => fetch("/api/admin/settings").then((r) => r.json()),
+  });
+  const couponEnabled = settings?.coupon_enabled !== "false";
+
+  const settingsMutation = useMutation({
+    mutationFn: ({ key, value }: { key: string; value: string }) =>
+      fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value }),
+      }).then((r) => r.json()),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-settings"] });
+      toast({ title: "設定を更新しました" });
+    },
   });
 
   const toggleMutation = useMutation({
@@ -65,6 +84,36 @@ export default function AdminCouponsPage() {
         <Button size="sm" className="gap-2" onClick={() => setShowModal(true)}>
           <Plus className="w-4 h-4" /> 新規作成
         </Button>
+      </div>
+
+      {/* Coupon feature toggle */}
+      <div className="card-light p-4 mb-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-brand-purple/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Settings2 className="w-4 h-4 text-brand-purple" />
+          </div>
+          <div>
+            <p className="font-bold text-gray-900 text-sm">クーポン機能</p>
+            <p className="text-xs text-gray-500">
+              {couponEnabled ? "予約確認画面にクーポン入力欄を表示しています" : "クーポン入力欄は非表示です"}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() =>
+            settingsMutation.mutate({
+              key: "coupon_enabled",
+              value: couponEnabled ? "false" : "true",
+            })
+          }
+          disabled={settingsMutation.isPending}
+          className="flex-shrink-0 transition-colors"
+          title={couponEnabled ? "無効にする" : "有効にする"}
+        >
+          {couponEnabled
+            ? <ToggleRight className="w-8 h-8 text-success" />
+            : <ToggleLeft className="w-8 h-8 text-gray-400" />}
+        </button>
       </div>
 
       {/* Filter tabs */}
