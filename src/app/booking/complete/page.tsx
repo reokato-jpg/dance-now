@@ -53,14 +53,14 @@ function BookingCompleteContent() {
       "BEGIN:VEVENT",
       `DTSTART:${start.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
       `DTEND:${end.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
-      `SUMMARY:Studio${studioName} スタジオ利用 - DANCE NOW`,
+      `SUMMARY:Studio${studioName} スタジオ利用 - STUDIO RENTAL`,
       `DESCRIPTION:予約番号: ${booking.reservationNo}`,
       "END:VEVENT", "END:VCALENDAR"
     ].join("\n");
     const blob = new Blob([ics], { type: "text/calendar" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `dance-now-${booking.reservationNo}.ics`;
+    a.href = url; a.download = `studio-rental-${booking.reservationNo}.ics`;
     a.click();
   };
 

@@ -6,8 +6,8 @@ import { QueryProvider } from "@/components/providers/query-provider";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "DANCE NOW | スタジオ予約",
-  description: "ダンススタジオのレンタル予約 — DANCE NOW",
+  title: "STUDIO RENTAL | スタジオ予約",
+  description: "ダンススクールマイセルフ スタジオレンタル予約",
   manifest: "/manifest.json",
 };
 

@@ -91,9 +91,9 @@ export async function POST(req: NextRequest) {
       ]);
       if ((customer as any)?.email && slot) {
         resend.emails.send({
-          from: process.env.EMAIL_FROM || "noreply@dance-now.jp",
+          from: process.env.EMAIL_FROM || "noreply@studio-rental.jp",
           to: (customer as any).email,
-          subject: `DANCE NOW - スタジオ${(slot as any).studio?.name} 予約確定`,
+          subject: `STUDIO RENTAL - スタジオ${(slot as any).studio?.name} 予約確定`,
           html: `<p>${(customer as any).last_name} ${(customer as any).first_name} 様</p><p>予約番号: ${reservationNo}</p>`,
         }).catch(console.error);
       }

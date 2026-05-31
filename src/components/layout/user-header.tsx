@@ -19,8 +19,8 @@ export function UserHeader() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
       <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/lessons" className="font-display text-2xl tracking-wider brand-gradient-text">
-          DANCE NOW
+        <Link href="/lessons" className="font-display text-xl tracking-widest brand-gradient-text">
+          STUDIO RENTAL
         </Link>
         {customer && (
           <nav className="flex items-center gap-2">

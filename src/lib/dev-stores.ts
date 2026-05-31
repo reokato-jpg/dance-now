@@ -28,13 +28,13 @@ export interface DevSlot {
 
 export const devStudios: DevStudio[] = [
   {
-    id: "dev-studio-a",
-    name: "A",
-    address: "渋谷区〇〇1-2-3 1F",
-    capacity: 30,
+    id: "dev-studio-myself",
+    name: "ダンススクールマイセルフ",
+    address: "尼崎市七松町2-6-6",
+    capacity: 20,
     pricePerHour: 3000,
-    openAt: "10:00",
-    closeAt: "22:00",
+    openAt: "08:00",
+    closeAt: "23:00",
     lessonCount: 0,
     createdAt: new Date().toISOString(),
   },
@@ -47,7 +47,7 @@ function makeSlot(id: string, studioId: string, studioName: string, hour: number
     id,
     studioId,
     studioName,
-    studioAddress: "渋谷区〇〇1-2-3 1F",
+    studioAddress: "尼崎市七松町2-6-6",
     startAt: d.toISOString(),
     durationMin,
     capacity: 1,
@@ -57,11 +57,11 @@ function makeSlot(id: string, studioId: string, studioName: string, hour: number
 }
 
 export const devSlots: DevSlot[] = [
-  makeSlot("dev-slot-1", "dev-studio-a", "A", 10, 60, 3000),
-  makeSlot("dev-slot-2", "dev-studio-a", "A", 12, 120, 6000),
-  makeSlot("dev-slot-3", "dev-studio-a", "A", 15, 60, 3000),
-  makeSlot("dev-slot-4", "dev-studio-a", "A", 17, 60, 3000),
-  makeSlot("dev-slot-5", "dev-studio-a", "A", 19, 90, 4500),
+  makeSlot("dev-slot-1", "dev-studio-myself", "マイセルフ", 10, 60, 3000),
+  makeSlot("dev-slot-2", "dev-studio-myself", "マイセルフ", 12, 120, 6000),
+  makeSlot("dev-slot-3", "dev-studio-myself", "マイセルフ", 15, 60, 3000),
+  makeSlot("dev-slot-4", "dev-studio-myself", "マイセルフ", 17, 60, 3000),
+  makeSlot("dev-slot-5", "dev-studio-myself", "マイセルフ", 19, 90, 4500),
 ];
 
 // ─── Dev Coupons ──────────────────────────────────────────

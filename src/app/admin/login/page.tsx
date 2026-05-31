@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
           <div className="w-16 h-16 brand-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-glow-purple">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="font-display text-3xl tracking-widest brand-gradient-text">DANCE NOW</h1>
+          <h1 className="font-display text-2xl tracking-widest brand-gradient-text">STUDIO RENTAL</h1>
           <p className="text-ink-400 text-sm mt-1">ADMIN CONSOLE</p>
         </div>
 
@@ -104,7 +104,7 @@ export default function AdminLoginPage() {
         )}
 
         <p className="text-center text-xs text-ink-600 mt-6">
-          © 2026 DANCE NOW · Admin v1.0
+          © 2026 STUDIO RENTAL · Admin v1.0
         </p>
       </motion.div>
     </div>

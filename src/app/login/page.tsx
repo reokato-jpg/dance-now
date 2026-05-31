@@ -62,9 +62,9 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="font-display text-6xl tracking-widest text-white mb-2">DANCE NOW</h1>
+          <h1 className="font-display text-5xl tracking-widest text-white mb-2">STUDIO RENTAL</h1>
           <p className="text-white/80 text-sm tracking-widest uppercase">
-            STUDIO RENTAL · BOOK YOUR SPACE
+            DANCE SCHOOL MYSELF · BOOK YOUR SPACE
           </p>
         </motion.div>
       </div>

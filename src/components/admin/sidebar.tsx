@@ -31,7 +31,7 @@ export function AdminSidebar() {
     <aside className="w-56 bg-ink-800 border-r border-ink-700 flex flex-col h-screen">
       {/* Logo */}
       <div className="p-4 border-b border-ink-700">
-        <span className="font-display text-xl tracking-widest brand-gradient-text">DANCE NOW</span>
+        <span className="font-display text-lg tracking-widest brand-gradient-text">STUDIO RENTAL</span>
         <p className="text-xs text-ink-500 mt-0.5">ADMIN CONSOLE</p>
       </div>
 
