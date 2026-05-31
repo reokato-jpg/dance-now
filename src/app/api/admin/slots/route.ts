@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
 
     const { data: slot, error } = await db.from("slots")
       .insert({
+        id: crypto.randomUUID(),
         studio_id: studioId,
         start_at: startAt.toISOString(),
         duration_min: Number(durationMin),

@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
     // 2. Create booking
     const { data: newBooking, error: bookingErr } = await db.from("bookings")
       .insert({
+        id: crypto.randomUUID(),
         reservation_no: reservationNo,
         customer_id: customerId,
         slot_id: slotId,
@@ -61,6 +62,7 @@ export async function POST(req: NextRequest) {
 
     // 3. Create payment
     await db.from("payments").insert({
+      id: crypto.randomUUID(),
       booking_id: newBooking.id,
       method: paymentMethod,
       provider_txn_id: paymentIntentId || merchantPaymentId || null,

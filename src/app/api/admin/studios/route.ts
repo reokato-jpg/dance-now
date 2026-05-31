@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
     const db = getAdminClient();
     const { data: studio, error } = await db.from("studios")
       .insert({
+        id: crypto.randomUUID(),
         name: name.trim(),
         address: address.trim(),
         capacity: Number(capacity),

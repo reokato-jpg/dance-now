@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 
     if (!customer) {
       const { data: created, error: createErr } = await db.from("customers")
-        .insert({ phone })
+        .insert({ id: crypto.randomUUID(), phone })
         .select("id, phone, email, last_name, first_name, genres")
         .single();
       if (createErr) throw createErr;

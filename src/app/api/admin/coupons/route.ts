@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
     const db = getAdminClient();
     const { data: coupon, error } = await db.from("coupons")
       .insert({
+        id: crypto.randomUUID(),
         code: code.trim().toUpperCase(),
         discount_type: discountType,
         discount_value: Number(discountValue),
