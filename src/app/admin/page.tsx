@@ -38,18 +38,18 @@ export default function AdminDashboard() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">ダッシュボード</h1>
-            <p className="text-ink-400 text-sm">{today}</p>
+            <h1 className="text-2xl font-bold text-gray-900">ダッシュボード</h1>
+            <p className="text-gray-500 text-sm">{today}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="card-dark h-28 animate-pulse" />
+            <div key={i} className="card-light h-28 animate-pulse" />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 card-dark h-64 animate-pulse" />
-          <div className="card-dark h-64 animate-pulse" />
+          <div className="lg:col-span-2 card-light h-64 animate-pulse" />
+          <div className="card-light h-64 animate-pulse" />
         </div>
       </div>
     );
@@ -64,10 +64,10 @@ export default function AdminDashboard() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">ダッシュボード</h1>
-          <p className="text-ink-400 text-sm">{today}</p>
+          <h1 className="text-2xl font-bold text-gray-900">ダッシュボード</h1>
+          <p className="text-gray-500 text-sm">{today}</p>
         </div>
-        <span className="text-xs text-ink-500 bg-ink-800 px-2 py-1 rounded-lg">1分ごとに自動更新</span>
+        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">1分ごとに自動更新</span>
       </div>
 
       {/* KPI Cards */}
@@ -117,10 +117,10 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Weekly chart */}
-        <div className="lg:col-span-2 card-dark p-5">
-          <h3 className="text-sm font-bold text-ink-400 uppercase tracking-wider mb-4">過去7日間の売上</h3>
+        <div className="lg:col-span-2 card-light p-5">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">過去7日間の売上</h3>
           {data.weeklyData.every((d) => d.sales === 0) ? (
-            <div className="h-[200px] flex items-center justify-center text-ink-500 text-sm">
+            <div className="h-[200px] flex items-center justify-center text-gray-400 text-sm">
               まだデータがありません
             </div>
           ) : (
@@ -135,16 +135,16 @@ export default function AdminDashboard() {
                 <YAxis hide />
                 <Tooltip
                   contentStyle={{
-                    background: "#1A1035",
-                    border: "1px solid #3D2B6B",
+                    background: "#fff",
+                    border: "1px solid #e5e7eb",
                     borderRadius: 8,
-                    color: "#fff",
+                    color: "#1f2937",
                   }}
                   formatter={(v: number) => [formatPrice(v), "売上"]}
                 />
                 <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
                   {data.weeklyData.map((_, i) => (
-                    <Cell key={i} fill={i === highestSalesIdx ? "#6B46C1" : "#3D2B6B"} />
+                    <Cell key={i} fill={i === highestSalesIdx ? "#6B46C1" : "#c4b5fd"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -153,12 +153,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Studio breakdown */}
-        <div className="card-dark p-5">
-          <h3 className="text-sm font-bold text-ink-400 uppercase tracking-wider mb-4">
+        <div className="card-light p-5">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
             スタジオ別 予約内訳
           </h3>
           {data.studioBreakdown.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-ink-500 text-sm">
+            <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
               データなし
             </div>
           ) : (
@@ -166,10 +166,10 @@ export default function AdminDashboard() {
               {data.studioBreakdown.map((s) => (
                 <div key={s.name}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white font-medium">{s.name}</span>
-                    <span className="text-ink-400">{s.pct}%</span>
+                    <span className="text-gray-900 font-medium">{s.name}</span>
+                    <span className="text-gray-500">{s.pct}%</span>
                   </div>
-                  <div className="h-1.5 bg-ink-700 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     <div className="h-full brand-gradient rounded-full" style={{ width: `${s.pct}%` }} />
                   </div>
                 </div>
@@ -180,10 +180,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Today's slots */}
-      <div className="card-dark p-5">
-        <h3 className="text-sm font-bold text-ink-400 uppercase tracking-wider mb-4">本日のスロット</h3>
+      <div className="card-light p-5">
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">本日のスロット</h3>
         {data.todaySlots.length === 0 ? (
-          <p className="text-ink-500 text-sm text-center py-8">本日のスロットはありません</p>
+          <p className="text-gray-400 text-sm text-center py-8">本日のスロットはありません</p>
         ) : (
           <div className="space-y-3">
             {data.todaySlots.map((sl) => {
@@ -191,24 +191,24 @@ export default function AdminDashboard() {
               return (
                 <div
                   key={sl.id}
-                  className="flex items-center justify-between p-3 bg-ink-700 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-brand-purple font-mono text-sm font-bold">
                       {format(new Date(sl.startAt), "HH:mm")}
                     </span>
                     <div>
-                      <p className="font-bold text-white text-sm">Studio {sl.studioName}</p>
-                      <p className="text-xs text-ink-400">
+                      <p className="font-bold text-gray-900 text-sm">Studio {sl.studioName}</p>
+                      <p className="text-xs text-gray-500">
                         {formatTimeRange(sl.startAt, sl.durationMin)} · {formatPrice(sl.price)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-gray-900">
                       {sl.bookedCount}/{sl.capacity}
                     </p>
-                    <div className="h-1 w-16 bg-ink-600 rounded-full mt-1 overflow-hidden">
+                    <div className="h-1 w-16 bg-gray-200 rounded-full mt-1 overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
@@ -242,12 +242,12 @@ function KpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="card-dark p-4">
+    <div className="card-light p-4">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-bold text-ink-400 uppercase tracking-wider">{label}</p>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</p>
         <span className="text-brand-purple">{icon}</span>
       </div>
-      <p className="text-2xl font-bold text-white mb-1">{value}</p>
+      <p className="text-2xl font-bold text-gray-900 mb-1">{value}</p>
       <p className={`text-xs font-medium flex items-center gap-1 ${positive ? "text-success" : "text-danger"}`}>
         {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
         {change}

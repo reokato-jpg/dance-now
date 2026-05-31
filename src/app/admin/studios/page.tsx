@@ -168,8 +168,8 @@ export default function AdminStudiosPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">スタジオ</h1>
-          <p className="text-ink-400 text-sm">
+          <h1 className="text-2xl font-bold text-gray-900">スタジオ</h1>
+          <p className="text-gray-500 text-sm">
             {studios.length}スタジオ
             {studios.length === 0 && " · スタジオを追加してください"}
           </p>
@@ -181,12 +181,12 @@ export default function AdminStudiosPage() {
 
       {/* Empty state */}
       {!isLoading && studios.length === 0 && (
-        <div className="card-dark p-10 text-center">
+        <div className="card-light p-10 text-center">
           <div className="w-16 h-16 brand-gradient rounded-2xl flex items-center justify-center mx-auto mb-4">
             <MapPin className="w-8 h-8 text-white" />
           </div>
-          <p className="font-bold text-white mb-1">スタジオがまだありません</p>
-          <p className="text-ink-400 text-sm mb-4">「スタジオ追加」から登録してください</p>
+          <p className="font-bold text-gray-900 mb-1">スタジオがまだありません</p>
+          <p className="text-gray-500 text-sm mb-4">「スタジオ追加」から登録してください</p>
           <Button size="sm" onClick={() => setModal(EMPTY_FORM)}><Plus className="w-4 h-4 mr-1" /> 最初のスタジオを追加</Button>
         </div>
       )}
@@ -194,22 +194,22 @@ export default function AdminStudiosPage() {
       {/* Loading skeleton */}
       {isLoading && (
         <div className="space-y-4">
-          {[1, 2].map((i) => <div key={i} className="card-dark h-32 animate-pulse" />)}
+          {[1, 2].map((i) => <div key={i} className="card-light h-32 animate-pulse" />)}
         </div>
       )}
 
       {/* Studio cards */}
       <div className="space-y-4">
         {studios.map((studio) => (
-          <div key={studio.id} className="card-dark p-5 hover:border-brand-purple transition-colors">
+          <div key={studio.id} className="card-light p-5 hover:border-brand-purple transition-colors">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 brand-gradient rounded-xl flex items-center justify-center text-xl font-bold text-white shadow-glow-purple">
                   {studio.name}
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-lg">Studio {studio.name}</h3>
-                  <div className="flex items-center gap-1 text-ink-400 text-sm">
+                  <h3 className="font-bold text-gray-900 text-lg">Studio {studio.name}</h3>
+                  <div className="flex items-center gap-1 text-gray-500 text-sm">
                     <MapPin className="w-3.5 h-3.5" />{studio.address}
                   </div>
                 </div>
@@ -218,14 +218,14 @@ export default function AdminStudiosPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setModal({ id: studio.id, name: studio.name, address: studio.address, capacity: studio.capacity, openAt: studio.openAt, closeAt: studio.closeAt })}
-                  className="p-2 rounded-lg text-ink-400 hover:text-white hover:bg-ink-600 transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                   title="編集"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setDeleteTarget(studio)}
-                  className="p-2 rounded-lg text-ink-400 hover:text-danger hover:bg-danger/10 transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-danger hover:bg-danger/10 transition-colors"
                   title="削除"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -234,15 +234,15 @@ export default function AdminStudiosPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-3 text-sm">
-              <div className="flex items-center gap-2 text-ink-400">
+              <div className="flex items-center gap-2 text-gray-500">
                 <Users className="w-4 h-4" />
                 <span>定員 {studio.capacity}名</span>
               </div>
-              <div className="flex items-center gap-2 text-ink-400">
+              <div className="flex items-center gap-2 text-gray-500">
                 <Clock className="w-4 h-4" />
                 <span>{studio.openAt}〜{studio.closeAt}</span>
               </div>
-              <div className="text-right text-ink-400">
+              <div className="text-right text-gray-500">
                 <span>レッスン {studio.lessonCount}本</span>
               </div>
             </div>

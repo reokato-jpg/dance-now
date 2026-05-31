@@ -90,8 +90,8 @@ export default function AdminCustomersPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">顧客管理 (CRM)</h1>
-          <p className="text-ink-400 text-sm">全 {(counts.ALL ?? 0).toLocaleString()} 名</p>
+          <h1 className="text-2xl font-bold text-gray-900">顧客管理 (CRM)</h1>
+          <p className="text-gray-500 text-sm">全 {(counts.ALL ?? 0).toLocaleString()} 名</p>
         </div>
         <Button variant="secondary" size="sm" className="gap-2" onClick={handleCsvExport}>
           <Download className="w-4 h-4" /> CSV出力
@@ -108,7 +108,7 @@ export default function AdminCustomersPage() {
               "flex-shrink-0 px-4 py-2 rounded-xl text-sm font-bold border transition-all",
               segment === key
                 ? "bg-brand-purple border-brand-purple text-white shadow-glow-purple"
-                : "border-ink-700 text-ink-400 hover:text-white bg-ink-800"
+                : "border-gray-200 text-gray-500 hover:text-gray-900 bg-white"
             )}
           >
             {SEGMENT_LABELS[key]}{" "}
@@ -121,35 +121,35 @@ export default function AdminCustomersPage() {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="電話番号・メール・名前で検索"
-          className="pl-9"
+          className="pl-9 bg-white border-gray-200 text-gray-900 placeholder-gray-400"
         />
       </div>
 
       {/* Table */}
-      <div className="card-dark overflow-hidden">
+      <div className="card-light overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-ink-700">
-              <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase">名前</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-ink-400 uppercase">連絡先</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-ink-400 uppercase">予約数</th>
-              <th className="px-4 py-3 text-right text-xs font-bold text-ink-400 uppercase">LTV</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-ink-400 uppercase">最終予約</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-ink-400 uppercase">セグメント</th>
+            <tr className="border-b border-gray-200 bg-gray-50">
+              <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">名前</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">連絡先</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">予約数</th>
+              <th className="px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase">LTV</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">最終予約</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase">セグメント</th>
             </tr>
           </thead>
           <tbody>
             {isLoading
               ? [...Array(5)].map((_, i) => (
-                  <tr key={i} className="border-b border-ink-700">
+                  <tr key={i} className="border-b border-gray-100">
                     {[...Array(6)].map((_, j) => (
                       <td key={j} className="px-4 py-3">
-                        <div className="h-4 bg-ink-700 rounded animate-pulse" />
+                        <div className="h-4 bg-gray-200 rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
@@ -157,7 +157,7 @@ export default function AdminCustomersPage() {
               : customers.length === 0
               ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-ink-500">
+                  <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
                     顧客が見つかりません
                   </td>
                 </tr>
@@ -171,22 +171,22 @@ export default function AdminCustomersPage() {
                   return (
                     <tr
                       key={c.id}
-                      className="border-b border-ink-700 hover:bg-ink-700/50 transition-colors"
+                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-4 py-3 text-white font-medium">
-                        {name ?? <span className="text-ink-500 text-xs">未設定</span>}
+                      <td className="px-4 py-3 text-gray-900 font-medium">
+                        {name ?? <span className="text-gray-400 text-xs">未設定</span>}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-mono text-white text-xs">{c.phone}</p>
-                        {c.email && <p className="text-ink-400 text-xs mt-0.5">{c.email}</p>}
+                        <p className="font-mono text-gray-900 text-xs">{c.phone}</p>
+                        {c.email && <p className="text-gray-500 text-xs mt-0.5">{c.email}</p>}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="font-bold text-white">{c.totalBookings}</span>
+                        <span className="font-bold text-gray-900">{c.totalBookings}</span>
                       </td>
                       <td className="px-4 py-3 text-right font-bold text-brand-purple">
                         {formatPrice(c.totalSpent)}
                       </td>
-                      <td className="px-4 py-3 text-center text-ink-400 text-xs">
+                      <td className="px-4 py-3 text-center text-gray-500 text-xs">
                         {c.lastBookedAt
                           ? format(new Date(c.lastBookedAt), "M/d")
                           : "---"}
@@ -206,7 +206,7 @@ export default function AdminCustomersPage() {
 
       {/* Pagination */}
       {total > 20 && (
-        <div className="flex items-center justify-between mt-4 text-sm text-ink-400">
+        <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
           <span>{total}件中 {(page - 1) * 20 + 1}〜{Math.min(page * 20, total)}件表示</span>
           <div className="flex gap-2">
             <Button

@@ -59,20 +59,20 @@ export default function AdminSalesPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">売上レポート</h1>
+          <h1 className="text-2xl font-bold text-gray-900">売上レポート</h1>
           {/* Month navigator */}
           <div className="flex items-center gap-2 mt-1">
             <button
               onClick={handlePrevMonth}
-              className="text-ink-400 hover:text-white transition-colors"
+              className="text-gray-500 hover:text-gray-900 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <p className="text-ink-400 text-sm font-medium">{monthLabel}</p>
+            <p className="text-gray-500 text-sm font-medium">{monthLabel}</p>
             <button
               onClick={handleNextMonth}
               disabled={isCurrentMonth}
-              className="text-ink-400 hover:text-white transition-colors disabled:opacity-30"
+              className="text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-30"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -86,36 +86,36 @@ export default function AdminSalesPage() {
       {/* KPI summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {isLoading ? (
-          [...Array(3)].map((_, i) => <div key={i} className="card-dark h-28 animate-pulse" />)
+          [...Array(3)].map((_, i) => <div key={i} className="card-light h-28 animate-pulse" />)
         ) : (
           <>
-            <div className="card-dark p-4">
-              <p className="text-xs font-bold text-ink-400 uppercase mb-2">月次売上</p>
-              <p className="text-2xl font-bold text-white">{formatPrice(summary.totalSales)}</p>
+            <div className="card-light p-4">
+              <p className="text-xs font-bold text-gray-500 uppercase mb-2">月次売上</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalSales)}</p>
               {summary.totalSalesGrowth != null ? (
                 <p className={`text-xs mt-1 flex items-center gap-1 ${summary.totalSalesGrowth >= 0 ? "text-success" : "text-danger"}`}>
                   <TrendingUp className="w-3 h-3" />
                   {summary.totalSalesGrowth >= 0 ? "+" : ""}{summary.totalSalesGrowth}% vs 先月
                 </p>
               ) : (
-                <p className="text-xs mt-1 text-ink-500">先月データなし</p>
+                <p className="text-xs mt-1 text-gray-400">先月データなし</p>
               )}
             </div>
-            <div className="card-dark p-4">
-              <p className="text-xs font-bold text-ink-400 uppercase mb-2">予約数</p>
-              <p className="text-2xl font-bold text-white">{summary.bookings}件</p>
-              <p className="text-xs mt-1 text-ink-500">確定済み</p>
+            <div className="card-light p-4">
+              <p className="text-xs font-bold text-gray-500 uppercase mb-2">予約数</p>
+              <p className="text-2xl font-bold text-gray-900">{summary.bookings}件</p>
+              <p className="text-xs mt-1 text-gray-400">確定済み</p>
             </div>
-            <div className="card-dark p-4">
-              <p className="text-xs font-bold text-ink-400 uppercase mb-2">客単価</p>
-              <p className="text-2xl font-bold text-white">{formatPrice(summary.avgPrice)}</p>
+            <div className="card-light p-4">
+              <p className="text-xs font-bold text-gray-500 uppercase mb-2">客単価</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.avgPrice)}</p>
               {summary.avgPriceGrowth != null ? (
                 <p className={`text-xs mt-1 flex items-center gap-1 ${summary.avgPriceGrowth >= 0 ? "text-success" : "text-danger"}`}>
                   <TrendingUp className="w-3 h-3" />
                   {summary.avgPriceGrowth >= 0 ? "+" : ""}{formatPrice(summary.avgPriceGrowth)} vs 先月
                 </p>
               ) : (
-                <p className="text-xs mt-1 text-ink-500">先月データなし</p>
+                <p className="text-xs mt-1 text-gray-400">先月データなし</p>
               )}
             </div>
           </>
@@ -124,12 +124,12 @@ export default function AdminSalesPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Daily sales chart */}
-        <div className="lg:col-span-2 card-dark p-5">
-          <h3 className="text-sm font-bold text-ink-400 uppercase tracking-wider mb-4">日次売上推移</h3>
+        <div className="lg:col-span-2 card-light p-5">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">日次売上推移</h3>
           {isLoading ? (
-            <div className="h-[220px] animate-pulse bg-ink-700 rounded-lg" />
+            <div className="h-[220px] animate-pulse bg-gray-100 rounded-lg" />
           ) : dailySales.every((d) => d.sales === 0) ? (
-            <div className="h-[220px] flex items-center justify-center text-ink-500 text-sm">
+            <div className="h-[220px] flex items-center justify-center text-gray-400 text-sm">
               この月のデータはありません
             </div>
           ) : (
@@ -137,7 +137,7 @@ export default function AdminSalesPage() {
               <AreaChart data={dailySales}>
                 <defs>
                   <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6B46C1" stopOpacity={0.4} />
+                    <stop offset="5%" stopColor="#6B46C1" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#6B46C1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
@@ -150,7 +150,7 @@ export default function AdminSalesPage() {
                 />
                 <YAxis hide />
                 <Tooltip
-                  contentStyle={{ background: "#1A1035", border: "1px solid #3D2B6B", borderRadius: 8, color: "#fff" }}
+                  contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, color: "#1f2937" }}
                   formatter={(v: number) => [formatPrice(v), "売上"]}
                   labelFormatter={(l) => `${l}日`}
                 />
@@ -167,12 +167,12 @@ export default function AdminSalesPage() {
         </div>
 
         {/* Payment split */}
-        <div className="card-dark p-5">
-          <h3 className="text-sm font-bold text-ink-400 uppercase tracking-wider mb-4">支払い方法</h3>
+        <div className="card-light p-5">
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">支払い方法</h3>
           {isLoading ? (
-            <div className="h-[150px] animate-pulse bg-ink-700 rounded-lg" />
+            <div className="h-[150px] animate-pulse bg-gray-100 rounded-lg" />
           ) : paymentSplit.every((p) => p.value === 0) ? (
-            <div className="h-[150px] flex items-center justify-center text-ink-500 text-sm">
+            <div className="h-[150px] flex items-center justify-center text-gray-400 text-sm">
               データなし
             </div>
           ) : (
@@ -199,11 +199,11 @@ export default function AdminSalesPage() {
                   <div key={p.name} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
-                      <span className="text-white">{p.name}</span>
+                      <span className="text-gray-900">{p.name}</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-bold text-white">{p.value}%</span>
-                      <span className="text-ink-400 text-xs ml-1">({formatPrice(p.amount)})</span>
+                      <span className="font-bold text-gray-900">{p.value}%</span>
+                      <span className="text-gray-500 text-xs ml-1">({formatPrice(p.amount)})</span>
                     </div>
                   </div>
                 ))}

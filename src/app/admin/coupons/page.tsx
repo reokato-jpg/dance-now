@@ -59,8 +59,8 @@ export default function AdminCouponsPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">クーポン管理</h1>
-          <p className="text-ink-400 text-sm">{coupons.length}件</p>
+          <h1 className="text-2xl font-bold text-gray-900">クーポン管理</h1>
+          <p className="text-gray-500 text-sm">{coupons.length}件</p>
         </div>
         <Button size="sm" className="gap-2" onClick={() => setShowModal(true)}>
           <Plus className="w-4 h-4" /> 新規作成
@@ -68,13 +68,13 @@ export default function AdminCouponsPage() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 bg-ink-800 rounded-xl p-1 w-fit mb-6">
+      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit mb-6">
         {(["all", "active", "inactive"] as const).map((key) => (
           <button
             key={key}
             onClick={() => setFilter(key)}
             className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
-              filter === key ? "bg-brand-purple text-white" : "text-ink-400 hover:text-white"
+              filter === key ? "bg-brand-purple text-white" : "text-gray-500 hover:text-gray-900"
             }`}
           >
             {key === "all" ? "すべて" : key === "active" ? "有効" : "無効"}
@@ -84,25 +84,25 @@ export default function AdminCouponsPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {[...Array(3)].map((_, i) => <div key={i} className="card-dark h-20 animate-pulse" />)}
+          {[...Array(3)].map((_, i) => <div key={i} className="card-light h-20 animate-pulse" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="card-dark p-12 text-center text-ink-500">クーポンがありません</div>
+        <div className="card-light p-12 text-center text-gray-400">クーポンがありません</div>
       ) : (
         <div className="space-y-3">
           {filtered.map((coupon) => (
             <div
               key={coupon.id}
-              className={`card-dark p-5 transition-colors ${!coupon.isActive ? "opacity-60" : ""}`}
+              className={`card-light p-5 transition-colors ${!coupon.isActive ? "opacity-60" : ""}`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1">
-                  <div className="w-10 h-10 bg-brand-purple/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-brand-purple/10 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Tag className="w-5 h-5 text-brand-purple" />
                   </div>
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="font-bold text-white font-mono text-lg">{coupon.code}</span>
+                      <span className="font-bold text-gray-900 font-mono text-lg">{coupon.code}</span>
                       <Badge variant={coupon.isActive ? "success" : "secondary"} className="text-xs">
                         {coupon.isActive ? "有効" : "無効"}
                       </Badge>
@@ -112,8 +112,8 @@ export default function AdminCouponsPage() {
                         <Badge variant="pink">{formatPrice(coupon.discountValue)} OFF</Badge>
                       )}
                     </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-ink-400 mt-1">
-                      <span>使用数: <strong className="text-white">{coupon.usageCount}</strong>
+                    <div className="flex flex-wrap gap-3 text-xs text-gray-500 mt-1">
+                      <span>使用数: <strong className="text-gray-900">{coupon.usageCount}</strong>
                         {coupon.usageLimit != null ? `/${coupon.usageLimit}` : ""}
                       </span>
                       {coupon.validUntil && (
@@ -124,7 +124,7 @@ export default function AdminCouponsPage() {
                       )}
                     </div>
                     {coupon.usageLimit != null && (
-                      <div className="h-1 w-32 bg-ink-700 rounded-full overflow-hidden mt-2">
+                      <div className="h-1 w-32 bg-gray-200 rounded-full overflow-hidden mt-2">
                         <div
                           className="h-full brand-gradient rounded-full"
                           style={{ width: `${Math.min(100, (coupon.usageCount / coupon.usageLimit) * 100)}%` }}
@@ -136,7 +136,7 @@ export default function AdminCouponsPage() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => toggleMutation.mutate({ id: coupon.id, isActive: !coupon.isActive })}
-                    className="text-ink-400 hover:text-brand-purple transition-colors"
+                    className="text-gray-400 hover:text-brand-purple transition-colors"
                     title={coupon.isActive ? "無効にする" : "有効にする"}
                   >
                     {coupon.isActive
@@ -149,7 +149,7 @@ export default function AdminCouponsPage() {
                         deleteMutation.mutate(coupon.id);
                       }
                     }}
-                    className="text-ink-400 hover:text-danger transition-colors"
+                    className="text-gray-400 hover:text-danger transition-colors"
                     title="削除"
                   >
                     <Trash2 className="w-4 h-4" />

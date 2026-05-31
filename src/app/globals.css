@@ -55,6 +55,9 @@
   .card-dark {
     @apply bg-ink-800 border border-ink-700 rounded-lg;
   }
+  .card-light {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+  }
   .btn-primary {
     @apply brand-gradient text-white font-bold rounded-pill px-6 py-3 hover:opacity-90 transition-opacity;
   }

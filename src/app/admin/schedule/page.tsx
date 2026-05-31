@@ -239,8 +239,8 @@ export default function AdminSchedulePage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">スロット管理</h1>
-          <p className="text-ink-400 text-sm">スタジオの空き枠を管理する</p>
+          <h1 className="text-2xl font-bold text-gray-900">スロット管理</h1>
+          <p className="text-gray-500 text-sm">スタジオの空き枠を管理する</p>
         </div>
         <Button size="sm" className="gap-2" onClick={() => setShowAddModal(true)}>
           <Plus className="w-4 h-4" /> スロット追加
@@ -249,29 +249,29 @@ export default function AdminSchedulePage() {
 
       {/* Week navigation */}
       <div className="flex items-center gap-3 mb-4">
-        <button onClick={() => setWeekOffset((v) => v - 1)} className="p-2 card-dark rounded-lg hover:border-brand-purple text-ink-400 hover:text-white">
+        <button onClick={() => setWeekOffset((v) => v - 1)} className="p-2 card-light rounded-lg hover:border-brand-purple text-gray-500 hover:text-gray-900">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="font-bold text-white min-w-[140px] text-center">
+        <span className="font-bold text-gray-900 min-w-[140px] text-center">
           {format(weekStart, "M月d日", { locale: ja })} 〜 {format(addDays(weekStart, 6), "M月d日")}
         </span>
-        <button onClick={() => setWeekOffset((v) => v + 1)} className="p-2 card-dark rounded-lg hover:border-brand-purple text-ink-400 hover:text-white">
+        <button onClick={() => setWeekOffset((v) => v + 1)} className="p-2 card-light rounded-lg hover:border-brand-purple text-gray-500 hover:text-gray-900">
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
       {/* Schedule grid */}
-      <div className="card-dark overflow-auto">
+      <div className="card-light overflow-auto">
         <div className="min-w-[800px]">
           {/* Header */}
-          <div className="grid border-b border-ink-700" style={{ gridTemplateColumns: "60px repeat(7, 1fr)" }}>
+          <div className="grid border-b border-gray-200 bg-gray-50" style={{ gridTemplateColumns: "60px repeat(7, 1fr)" }}>
             <div className="p-2" />
             {weekDays.map((day) => {
               const isToday = day.toDateString() === new Date().toDateString();
               return (
-                <div key={day.toISOString()} className={cn("p-2 text-center border-l border-ink-700", isToday && "bg-brand-purple/10")}>
-                  <p className="text-xs text-ink-400">{format(day, "E", { locale: ja })}</p>
-                  <p className={cn("text-sm font-bold", isToday ? "text-brand-purple" : "text-white")}>{format(day, "M/d")}</p>
+                <div key={day.toISOString()} className={cn("p-2 text-center border-l border-gray-200", isToday && "bg-brand-purple/10")}>
+                  <p className="text-xs text-gray-500">{format(day, "E", { locale: ja })}</p>
+                  <p className={cn("text-sm font-bold", isToday ? "text-brand-purple" : "text-gray-900")}>{format(day, "M/d")}</p>
                 </div>
               );
             })}
@@ -281,14 +281,14 @@ export default function AdminSchedulePage() {
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="grid border-b border-ink-700/50"
+              className="grid border-b border-gray-100"
               style={{ gridTemplateColumns: "60px repeat(7, 1fr)", minHeight: "52px" }}
             >
-              <div className="p-2 text-right text-xs text-ink-500 font-mono pt-2">{hour}:00</div>
+              <div className="p-2 text-right text-xs text-gray-400 font-mono pt-2">{hour}:00</div>
               {weekDays.map((day) => {
                 const daySlots = slotsForDayHour(day, hour);
                 return (
-                  <div key={day.toISOString()} className="border-l border-ink-700/50 p-1 space-y-1">
+                  <div key={day.toISOString()} className="border-l border-gray-100 p-1 space-y-1">
                     {daySlots.map((s) => {
                       const color = studioColorMap[s.studioId] ?? "#6B46C1";
                       return (
@@ -297,9 +297,9 @@ export default function AdminSchedulePage() {
                           className="rounded p-1 text-xs group relative"
                           style={{ backgroundColor: color + "22", borderLeft: `3px solid ${color}` }}
                         >
-                          <p className="font-bold text-white truncate">Studio {s.studioName}</p>
-                          <p className="text-ink-400">{s.durationMin}分 · {formatPrice(s.price)}</p>
-                          <p className={cn("text-xs", s.bookedCount >= s.capacity ? "text-danger" : "text-ink-500")}>
+                          <p className="font-bold text-gray-900 truncate">Studio {s.studioName}</p>
+                          <p className="text-gray-500">{s.durationMin}分 · {formatPrice(s.price)}</p>
+                          <p className={cn("text-xs", s.bookedCount >= s.capacity ? "text-danger" : "text-gray-400")}>
                             {s.bookedCount}/{s.capacity}枠
                           </p>
                           {s.bookedCount === 0 && (
